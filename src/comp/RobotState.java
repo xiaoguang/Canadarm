@@ -2,7 +2,7 @@ package comp;
 
 import java.util.List;
 
-public class Robot {
+public class RobotState {
 	int numberOfSegments;
 	List<Segment> segments;
 	Coordinate start;
