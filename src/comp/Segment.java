@@ -1,8 +1,8 @@
 package comp;
 
 public class Segment {
-	Coordinate begin;
-	Coordinate end;
+	Coordinate start;
+	Coordinate stop;
 	double maxLength;
 	double minLength;
 	double length;

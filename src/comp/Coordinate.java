@@ -1,6 +1,6 @@
 package comp;
 
-import utils.GlobalConfig;
+import utils.GlobalCfg;
 
 public class Coordinate {
 	double X;
@@ -13,8 +13,8 @@ public class Coordinate {
 
 	@Override
 	public int hashCode() {
-		return GlobalConfig.prime1 * Double.valueOf(X).hashCode()
-				+ GlobalConfig.prime5 * Double.valueOf(Y).hashCode();
+		return GlobalCfg.prime1 * Double.valueOf(X).hashCode()
+				+ GlobalCfg.prime5 * Double.valueOf(Y).hashCode();
 	}
 
 	@Override

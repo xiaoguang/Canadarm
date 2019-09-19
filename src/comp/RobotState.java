@@ -5,6 +5,6 @@ import java.util.List;
 public class RobotState {
 	int numberOfSegments;
 	List<Segment> segments;
-	Coordinate start;
-	Coordinate stop;
+	Coordinate ee1;
+	Coordinate ee2;
 }
