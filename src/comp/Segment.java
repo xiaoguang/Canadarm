@@ -6,5 +6,5 @@ public class Segment {
 	double maxLength;
 	double minLength;
 	double length;
-	double angle;
+	Angle angle;
 }

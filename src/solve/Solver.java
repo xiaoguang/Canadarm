@@ -52,6 +52,17 @@ public class Solver {
 			stream.close();
 	}
 
+	private static void readInput(String fileName) throws Exception {
+		List<String> list = new ArrayList<String>();
+		Stream<String> stream = Files.lines(Paths.get(fileName));
+		// list = (List<String>) stream.collect(Collectors.toList());
+		list = (List<String>) stream.filter(p -> !p.startsWith("#"))
+				.collect(Collectors.toList());
+		list.forEach(System.out::println);
+		if (stream != null)
+			stream.close();
+	}
+
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		JFrame frame = new JFrame("My First GUI");
@@ -65,7 +76,8 @@ public class Solver {
 
 		// real things
 		try {
-			readOutput(args[0]);
+			readInput(args[0]);
+			// readOutput(args[1]);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

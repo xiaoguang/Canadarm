@@ -1,6 +1,6 @@
 package comp;
 
 public class Obstacle {
-	Coordinate bottomLeft;
-	Coordinate topRight;
+	Coordinate bl;
+	Coordinate tr;
 }

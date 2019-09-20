@@ -10,5 +10,6 @@ public final class GlobalCfg {
 
 	public static final double delta = 1e-3;
 	public static final double epsilon = 1e-6;
+	public static final double gpRadius = 0.013;
 
 }
