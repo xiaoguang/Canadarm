@@ -1,20 +1,34 @@
 package comp;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Board {
 
-	RobotState initRobotState;
+	static RobotState initRobotState;
+	static RobotState goalRobotState;
+	RobotState state;
 
-	Coordinate initGrapple;
-	Coordinate goalGrapple;
+	static final List<Coordinate> grapples = new ArrayList<Coordinate>();
+	static final List<Obstacle> obstacles = new ArrayList<Obstacle>();
 
-	List<Coordinate> grapples;
-	List<Obstacle> obstacles;
+	public Board(RobotState state) {
+		this.state = state;
+	}
 
-	public Board(RobotState rs, Coordinate ig, Coordinate gg,
-			List<Coordinate> grapples, List<Obstacle> obstacles) {
-
+	@Override
+	public String toString() {
+		String str = "";
+		str = str.concat(
+				"Board :" + System.lineSeparator() + System.lineSeparator());
+		str = str.concat(
+				"Init " + Board.initRobotState + System.lineSeparator());
+		str = str.concat(
+				"Goal " + Board.goalRobotState + System.lineSeparator());
+		str = str.concat("Current " + this.state + System.lineSeparator());
+		str = str.concat("Grapple " + grapples + System.lineSeparator());
+		str = str.concat("Grapple " + obstacles + System.lineSeparator());
+		return str;
 	}
 
 }

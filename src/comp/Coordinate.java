@@ -3,8 +3,12 @@ package comp;
 import utils.GlobalCfg;
 
 public class Coordinate {
+
 	double X;
 	double Y;
+
+	private Coordinate() {
+	}
 
 	public Coordinate(double x, double y) {
 		this.X = x;
@@ -18,6 +22,14 @@ public class Coordinate {
 	}
 
 	@Override
+	public String toString() {
+		String str = "";
+		str = str.concat(
+				" X " + this.X + " Y " + this.Y + System.lineSeparator());
+		return str;
+	}
+
+	@Override
 	public boolean equals(Object object) {
 		if (object == null)
 			return false;
@@ -27,6 +39,14 @@ public class Coordinate {
 			return false;
 		Coordinate c = (Coordinate) object;
 		return ((this.X == c.X) && (this.Y == c.Y));
+	}
+
+	@Override
+	public Coordinate clone() {
+		Coordinate coord = new Coordinate();
+		coord.X = this.X;
+		coord.Y = this.Y;
+		return coord;
 	}
 
 }
