@@ -22,7 +22,7 @@ public class RobotState {
 	public String toString() {
 		String str = "";
 		str = str.concat("State :" + System.lineSeparator());
-		str = str.concat("Start Point : " + start);
+		str = str.concat("Start Point : " + start + System.lineSeparator());
 		for (Segment seg : this.segments) {
 			str = str.concat(seg.toString() + System.lineSeparator());
 		}

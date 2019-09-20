@@ -24,8 +24,7 @@ public class Coordinate {
 	@Override
 	public String toString() {
 		String str = "";
-		str = str.concat(
-				" X " + this.X + " Y " + this.Y + System.lineSeparator());
+		str = str.concat(" X " + this.X + " Y " + this.Y);
 		return str;
 	}
 

@@ -18,7 +18,8 @@ public class ProblemSpec {
 		String x3;
 
 		Coordinate ee;
-		
+		List<Angle> angles;
+		List<Double> lengths;
 
 		OutputFormat(String[] input) {
 			assertTrue(input.length == 3);
@@ -29,17 +30,28 @@ public class ProblemSpec {
 
 		public void transform() {
 			String[] coord = x1.split(" ");
-			ee = new Coordinate(Double.parseDouble(coord[0]),
+			this.ee = new Coordinate(Double.parseDouble(coord[0]),
 					Double.parseDouble(coord[1]));
-			
+
+			this.angles = new ArrayList<Angle>();
+			String[] angs = x2.split(" ");
+			for (String ang : angs) {
+				this.angles.add(new AngleInDegree(Double.parseDouble(ang)));
+			}
+
+			this.lengths = new ArrayList<Double>();
+			String[] lens = x2.split(" ");
+			for (String len : lens) {
+				this.lengths.add(Double.parseDouble(len));
+			}
 		}
 
 		@Override
 		public String toString() {
 			String str = "";
-			str = str.concat(x1).concat(" ; ");
-			str = str.concat(x2).concat(" ; ");
-			str = str.concat(x3).concat(" ; ");
+			str = str.concat(ee.toString()).concat(" ; ");
+			str = str.concat(angles.toString()).concat(" ; ");
+			str = str.concat(lengths.toString()).concat(" ; ");
 			return str;
 		}
 	}
@@ -47,13 +59,19 @@ public class ProblemSpec {
 	public static void readOutput(String fileName) throws Exception {
 		List<OutputFormat> list = new ArrayList<OutputFormat>();
 		Stream<String> stream = Files.lines(Paths.get(fileName));
-		list = (List<OutputFormat>) stream.map(p -> {
-			return new OutputFormat(p.split(";"));
-		}).collect(Collectors.toList());
+		list = (List<OutputFormat>) stream.filter(p -> !p.trim().isEmpty())
+				.map(p -> {
+					OutputFormat opf = new OutputFormat(p.split(";"));
+					opf.transform();
+					return opf;
+				}).collect(Collectors.toList());
+
 		if (stream != null)
 			stream.close();
 
-		list.forEach(System.out::println);
+		for (OutputFormat opf : list) {
+			System.out.println(opf);
+		}
 	}
 
 	public static Board readInput(String fileName) throws Exception {

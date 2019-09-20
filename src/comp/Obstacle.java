@@ -16,7 +16,7 @@ public class Obstacle {
 	@Override
 	public String toString() {
 		String str = "";
-		str = str.concat("BL : " + this.bl + "TR : " + this.tr);
+		str = str.concat("BL : " + this.bl + "  " + "TR : " + this.tr);
 		return str;
 	}
 }

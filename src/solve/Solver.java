@@ -19,13 +19,11 @@ public class Solver {
 		frame.getContentPane().add(button2);
 		frame.setVisible(true);
 
-		// real things
 		try {
 			Board bd = ProblemSpec.readInput(args[0]);
-			System.out.println(bd.toString());
+			// System.out.println(bd.toString());
 			ProblemSpec.readOutput(args[1]);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
