@@ -1,7 +1,5 @@
 package comp;
 
-import static org.junit.Assert.assertTrue;
-
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -22,7 +20,6 @@ public class ProblemSpec {
 		List<Double> lengths;
 
 		OutputFormat(String[] input) {
-			assertTrue(input.length == 3);
 			x1 = input[0].trim();
 			x2 = input[1].trim();
 			x3 = input[2].trim();
@@ -40,7 +37,7 @@ public class ProblemSpec {
 			}
 
 			this.lengths = new ArrayList<Double>();
-			String[] lens = x2.split(" ");
+			String[] lens = x3.split(" ");
 			for (String len : lens) {
 				this.lengths.add(Double.parseDouble(len));
 			}
