@@ -71,6 +71,11 @@ public class CollisionCheck {
 		Coordinate q1 = l1.q;
 		Coordinate p2 = l2.p;
 		Coordinate q2 = l2.q;
+		return this.testLineCollision(p1, q1, p2, q2);
+	}
+
+	public boolean testLineCollision(Coordinate p1, Coordinate q1,
+			Coordinate p2, Coordinate q2) {
 		if (!this.testBoundingBoxCollision(p1, q1, p2, q2))
 			return false;
 		return this.testOrientationCollision(p1, q1, p2, q2);

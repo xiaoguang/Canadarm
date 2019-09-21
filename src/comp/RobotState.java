@@ -77,4 +77,26 @@ public class RobotState {
 		return state;
 	}
 
+	@Override
+	public boolean equals(Object object) {
+		if (object == null)
+			return false;
+		if (object == this)
+			return true;
+		if (this.getClass() != object.getClass())
+			return false;
+		RobotState rs = (RobotState) object;
+		if (this.grapple != rs.grapple)
+			return false;
+		if (this.joints.size() != rs.joints.size())
+			return false;
+		for (int i = 0; i < this.joints.size(); i++) {
+			Coordinate c1 = this.joints.get(i);
+			Coordinate c2 = rs.joints.get(i);
+			if (!c1.equals(c2))
+				return false;
+		}
+		return true;
+	}
+
 }
