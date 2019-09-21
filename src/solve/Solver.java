@@ -21,8 +21,8 @@ public class Solver {
 
 		try {
 			Board bd = ProblemSpec.readInput(args[0]);
-			// System.out.println(bd.toString());
-			ProblemSpec.readOutput(args[1]);
+			System.out.println(bd.toString());
+			// ProblemSpec.readOutput(args[1]);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

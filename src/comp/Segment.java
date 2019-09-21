@@ -18,6 +18,10 @@ public class Segment implements Cloneable {
 		this.angle = angle;
 	}
 
+	public boolean testLengthConstraint() {
+		return (this.len < this.max) && (this.min < this.len);
+	}
+
 	@Override
 	public String toString() {
 		String str = "";

@@ -100,17 +100,26 @@ public class ProblemSpec {
 			String[] degrees = list.get(idx).split(" ");
 			idx += 1;
 			String[] lengths = list.get(idx).split(" ");
+
 			for (int z = 0; z < numberOfSegments; z++) {
+				double degree = Double.parseDouble(degrees[z]);
+				if (grappleIndex == 2) {
+					degree = Double
+							.parseDouble(degrees[numberOfSegments - 1 - z]);
+				}
 				segs.add(new Segment(Double.parseDouble(mins[z]),
 						Double.parseDouble(maxs[z]),
 						Double.parseDouble(lengths[z]),
-						new AngleInDegree(Double.parseDouble(degrees[z]))));
+						new AngleInDegree(degree)));
 			}
 			if (grappleIndex == 2) {
 				Collections.reverse(segs);
 			}
-			state = new RobotState(new Coordinate(Double.parseDouble(coord[0]),
-					Double.parseDouble(coord[1])), segs);
+
+			state = new RobotState(grappleIndex,
+					new Coordinate(Double.parseDouble(coord[0]),
+							Double.parseDouble(coord[1])),
+					segs);
 			Board.initRobotState = state.clone();
 		}
 
@@ -124,16 +133,23 @@ public class ProblemSpec {
 			String[] degrees = list.get(idx).split(" ");
 			idx += 1;
 			String[] lengths = list.get(idx).split(" ");
+
 			for (int z = 0; z < numberOfSegments; z++) {
+				double degree = Double.parseDouble(degrees[z]);
+				if (grappleIndex == 2) {
+					degree = Double
+							.parseDouble(degrees[numberOfSegments - 1 - z]);
+				}
 				segs.add(new Segment(Double.parseDouble(mins[z]),
 						Double.parseDouble(maxs[z]),
 						Double.parseDouble(lengths[z]),
-						new AngleInDegree(Double.parseDouble(degrees[z]))));
+						new AngleInDegree(degree)));
 			}
 			if (grappleIndex == 2) {
 				Collections.reverse(segs);
 			}
-			Board.goalRobotState = new RobotState(
+
+			Board.goalRobotState = new RobotState(grappleIndex,
 					new Coordinate(Double.parseDouble(coord[0]),
 							Double.parseDouble(coord[1])),
 					segs);

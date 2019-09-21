@@ -16,6 +16,10 @@ public class Board {
 		this.state = state;
 	}
 
+	public boolean testLengthConstraint() {
+		return this.state.testLengthConstraint();
+	}
+
 	@Override
 	public String toString() {
 		String str = "";
