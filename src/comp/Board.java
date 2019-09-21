@@ -58,4 +58,22 @@ public class Board {
 		return false;
 	}
 
+	public boolean selfCollision() {
+		if (this.state.segments.size() < 3)
+			return false;
+		for (int i = 0; i < this.state.joints.size() - 2; i++) {
+			Coordinate c1 = this.state.joints.get(i);
+			Coordinate c2 = this.state.joints.get(i + 1);
+
+			for (int j = i + 2; j < this.state.joints.size() - 1; j++) {
+				Coordinate c3 = this.state.joints.get(j);
+				Coordinate c4 = this.state.joints.get(j + 1);
+
+				if (checker.testLineCollision(c1, c2, c3, c4))
+					return true;
+			}
+		}
+		return false;
+	}
+
 }
