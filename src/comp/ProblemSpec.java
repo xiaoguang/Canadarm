@@ -162,7 +162,7 @@ public class ProblemSpec {
 					Double.parseDouble(coord[1]));
 			Coordinate tr = new Coordinate(Double.parseDouble(coord[2]),
 					Double.parseDouble(coord[3]));
-			Board.obstacles.add(new Obstacle(bl, tr));
+			Board.obstacles.add(new BoundingBox(bl, tr));
 		}
 
 		return new Board(state);

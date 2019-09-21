@@ -1,14 +1,14 @@
 package comp;
 
-public class Obstacle {
+public class BoundingBox {
 	Coordinate bl;
 	Coordinate tr;
 
 	@SuppressWarnings("unused")
-	private Obstacle() {
+	private BoundingBox() {
 	}
 
-	public Obstacle(Coordinate bl, Coordinate tr) {
+	public BoundingBox(Coordinate bl, Coordinate tr) {
 		this.bl = bl;
 		this.tr = tr;
 	}

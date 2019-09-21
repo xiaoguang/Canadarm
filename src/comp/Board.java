@@ -10,7 +10,7 @@ public class Board {
 	RobotState state;
 
 	static final List<Coordinate> grapples = new ArrayList<Coordinate>();
-	static final List<Obstacle> obstacles = new ArrayList<Obstacle>();
+	static final List<BoundingBox> obstacles = new ArrayList<BoundingBox>();
 
 	public Board(RobotState state) {
 		this.state = state;
