@@ -37,7 +37,8 @@ public class Coordinate {
 		if (this.getClass() != object.getClass())
 			return false;
 		Coordinate c = (Coordinate) object;
-		return ((this.X == c.X) && (this.Y == c.Y));
+		return ((Math.abs(this.X - c.X) < GlobalCfg.epsilon)
+				&& (Math.abs(this.Y - c.Y) < GlobalCfg.epsilon));
 	}
 
 	@Override
