@@ -18,7 +18,6 @@ public class Board {
 	static final List<Coordinate> grapples = new ArrayList<Coordinate>();
 	static final List<BoundingBox> obstacles = new ArrayList<BoundingBox>();
 
-	@SuppressWarnings("unused")
 	private Board() {
 	}
 
