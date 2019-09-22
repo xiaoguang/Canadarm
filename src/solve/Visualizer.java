@@ -19,7 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 
 import comp.Board;
-import comp.ProblemSpec;
+import comp.RobotState;
 import utils.CommandType;
 
 public class Visualizer {
@@ -84,7 +84,7 @@ public class Visualizer {
 	private Board loadProblem(String fileName) {
 		Board board = null;
 		try {
-			board = ProblemSpec.readInput(fileName);
+			board = Board.readBoardFromInput(fileName);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -94,7 +94,7 @@ public class Visualizer {
 
 	private void loadSolution(String fileName) {
 		try {
-			ProblemSpec.readOutput(fileName);
+			RobotState.readRobotStateFromInput(fileName);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
