@@ -1,4 +1,4 @@
-package comp;
+package utils;
 
 public enum CommandType {
 

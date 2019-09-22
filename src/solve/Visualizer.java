@@ -1,4 +1,4 @@
-package comp;
+package solve;
 
 import java.awt.Container;
 import java.awt.event.ActionEvent;
@@ -6,6 +6,8 @@ import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+
+import utils.CommandType;
 
 public class Visualizer {
 
