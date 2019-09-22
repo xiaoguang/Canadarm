@@ -17,4 +17,8 @@ public final class GlobalCfg {
 	public static final int framerateInit = 50;
 	public static final int samplingPeriodInit = 100;
 
+	public static final int canvasSize = 600;
+	public static final int canvasSizeX = 600;
+	public static final int canvasSizeY = 750;
+
 }

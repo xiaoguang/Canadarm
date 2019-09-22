@@ -2,6 +2,8 @@ package solve;
 
 import javax.swing.JApplet;
 
+import utils.GlobalCfg;
+
 public class VisualizationApplet extends JApplet {
 
 	private static final long serialVersionUID = 9100014557980608785L;
@@ -16,6 +18,6 @@ public class VisualizationApplet extends JApplet {
 		} catch (Exception e) {
 			System.err.println("Could not create the visualizer.");
 		}
-		this.setSize(800, 600);
+		this.setSize(GlobalCfg.canvasSizeX, GlobalCfg.canvasSizeY);
 	}
 }

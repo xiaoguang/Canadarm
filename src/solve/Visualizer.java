@@ -13,9 +13,13 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 
+import comp.Board;
+import comp.ProblemSpec;
 import utils.CommandType;
 
 public class Visualizer {
@@ -68,6 +72,49 @@ public class Visualizer {
 	private ImageIcon playIcon;
 	private ImageIcon pauseIcon;
 	private ImageIcon stopIcon;
+	private boolean hasProblem;
+	private boolean hasSolution;
+	private JMenuItem loadProblemItem;
+	private JMenuItem loadSolutionItem;
+	private JMenuItem exitItem;
+	private JMenuItem problemItem;
+	private JMenuItem solutionItem;
+	private JMenu animationMenu;
+
+	private Board loadProblem(String fileName) {
+		Board board = null;
+		try {
+			board = ProblemSpec.readInput(fileName);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return board;
+	}
+
+	private void loadSolution(String fileName) {
+		try {
+			ProblemSpec.readOutput(fileName);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void setHasProblem(boolean hasProblem) {
+		this.hasProblem = hasProblem;
+		this.loadSolutionItem.setEnabled(hasProblem);
+		this.problemItem.setEnabled(hasProblem);
+		this.setHasSolution(false);
+		this.panel.repaint();
+	}
+
+	private void setHasSolution(boolean hasSolution) {
+		this.hasSolution = hasSolution;
+		this.solutionItem.setEnabled(hasSolution);
+		this.animationMenu.setEnabled(hasSolution);
+		this.panel.repaint();
+	}
 
 	public Visualizer(Container c) {
 		this.panel = new VisualizationPanel(this);
@@ -76,6 +123,7 @@ public class Visualizer {
 		this.playIcon = createImageIcon("assets/play.gif", "Play");
 		this.pauseIcon = createImageIcon("assets/pause.gif", "Pause");
 		this.stopIcon = createImageIcon("assets/stop.gif", "Stop");
+		this.hasProblem = false;
 
 		JPanel wp = new JPanel(new BorderLayout());
 		wp.add(this.panel, BorderLayout.CENTER);
@@ -95,15 +143,15 @@ public class Visualizer {
 
 	public static void main(String[] args) {
 		JFrame frame = new JFrame("Assignment 1 visualiser");
-		Visualizer vis = new Visualizer(frame);
-		/*-
+		Visualizer visualizer = new Visualizer(frame);
+
 		if (args.length > 0) {
-			vis.loadProblem(new File(args[0]));
-			if (vis.hasProblem() && args.length >= 2) {
-				vis.loadSolution(new File(args[1]));
+			visualizer.loadProblem(args[0]);
+			if (visualizer.hasProblem && args.length >= 2) {
+				visualizer.loadSolution(args[1]);
 			}
 		}
-		*/
+
 		frame.setSize(700, 766);
 		frame.setLocation(300, 20);
 		frame.addWindowListener(new WindowAdapter() {
