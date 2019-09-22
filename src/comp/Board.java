@@ -76,4 +76,11 @@ public class Board {
 		return false;
 	}
 
+	public boolean collision() {
+		boolean collide = false;
+		collide = collide || this.selfCollision();
+		collide = collide || this.obstacleCollision();
+		return collide;
+	}
+
 }

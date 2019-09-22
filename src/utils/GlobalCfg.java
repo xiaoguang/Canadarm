@@ -12,4 +12,9 @@ public final class GlobalCfg {
 	public static final double epsilon = 1e-6;
 	public static final double gpRadius = 0.013;
 
+	public static final int framerateMin = 1;
+	public static final int framerateMax = 200;
+	public static final int framerateInit = 50;
+	public static final int samplingPeriodInit = 100;
+
 }
