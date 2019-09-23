@@ -1,11 +1,8 @@
 package comp;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class RobotState {
 
@@ -185,21 +182,6 @@ public class RobotState {
 			str = str.concat(anglesInDegree).concat(segmentsLength);
 			return str;
 		}
-	}
-
-	public static List<RobotStateOutPut> readRobotStateFromInput(
-			String fileName) throws Exception {
-		List<RobotStateOutPut> list = new ArrayList<RobotStateOutPut>();
-		Stream<String> stream = Files.lines(Paths.get(fileName));
-		list = (List<RobotStateOutPut>) stream.filter(p -> !p.trim().isEmpty())
-				.map(p -> {
-					return new RobotStateOutPut(p.split(";"));
-				}).collect(Collectors.toList());
-
-		if (stream != null)
-			stream.close();
-
-		return list;
 	}
 
 }

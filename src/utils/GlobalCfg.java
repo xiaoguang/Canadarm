@@ -18,7 +18,11 @@ public final class GlobalCfg {
 	public static final int samplingPeriodInit = 100;
 
 	public static final int canvasSize = 600;
+	public static final int controlSize = 150;
 	public static final int canvasSizeX = 600;
 	public static final int canvasSizeY = 750;
+
+	public static final int lineWidth = 3;
+	public static final double eeLabelOffset = 0.025;
 
 }

@@ -1,20 +1,17 @@
 package solve;
 
-import java.util.List;
-
-import comp.Board;
-import comp.RobotState;
+import comp.ProblemAndSolution;
 import comp.RobotState.RobotStateOutPut;
 
 public class Solver {
 
 	public static void main(String[] args) {
+		ProblemAndSolution probNSolt = new ProblemAndSolution();
 		try {
-			Board board = Board.readBoardFromInput(args[0]);
-			System.out.println(board.toString());
-			List<RobotStateOutPut> rso = RobotState
-					.readRobotStateFromInput(args[1]);
-			for (RobotStateOutPut out : rso)
+			probNSolt.readProblemFromInput(args[0]);
+			System.out.println(probNSolt.board.toString());
+			probNSolt.readSolutionFromInput(args[1]);
+			for (RobotStateOutPut out : probNSolt.robotStates)
 				System.out.println(out);
 		} catch (Exception e) {
 			e.printStackTrace();
