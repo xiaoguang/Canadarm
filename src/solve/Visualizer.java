@@ -1,10 +1,12 @@
 package solve;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
@@ -33,7 +35,6 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
-import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -69,15 +70,20 @@ public class Visualizer {
 		java.net.URL imgURL = getClass().getResource(path);
 		if (imgURL != null) {
 			return new ImageIcon(imgURL, description);
-		} else {
-			return new ImageIcon(path, description);
 		}
+		return new ImageIcon(path, description);
+	}
+
+	protected Image createImage(ImageIcon icon) {
+		return icon.getImage();
 	}
 
 	private JButton playPauseButton, stopButton;
 	private ImageIcon playIcon = createImageIcon("assets/play.gif", "Play");
 	private ImageIcon pauseIcon = createImageIcon("assets/pause.gif", "Pause");
 	private ImageIcon stopIcon = createImageIcon("assets/stop.gif", "Stop");
+	private Image bgImage = createImage(
+			createImageIcon("assets/background_1.png", "BackGround"));
 
 	private boolean animating;
 	private boolean wasPlaying;
@@ -116,7 +122,7 @@ public class Visualizer {
 				vis.loadSolution(new File(args[1]));
 			}
 		}
-		frame.setSize(GlobalCfg.canvasSizeX, GlobalCfg.canvasSizeY);
+		frame.setSize(GlobalCfg.frameSizeX, GlobalCfg.frameSizeY);
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				System.exit(0);
@@ -249,14 +255,17 @@ public class Visualizer {
 
 	private void createComponents() {
 		this.wasPlaying = false;
-		vp = new VisualizationPanel(this);
+		vp = new VisualizationPanel(this, this.bgImage);
+		vp.setSize(new Dimension(GlobalCfg.displayPanelSize,
+				GlobalCfg.displayPanelSize));
 		JPanel wp = new JPanel(new BorderLayout());
 		wp.add(vp, BorderLayout.CENTER);
-		wp.setSize(new Dimension(GlobalCfg.canvasSize, GlobalCfg.canvasSize));
+		wp.setSize(new Dimension(GlobalCfg.displayPanelSize,
+				GlobalCfg.displayPanelSize));
 		container.setLayout(new BorderLayout());
 		wp.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createEmptyBorder(1, 1, 1, 1),
-				BorderFactory.createEtchedBorder(EtchedBorder.LOWERED)));
+				BorderFactory.createEmptyBorder(5, 5, 5, 5),
+				BorderFactory.createLineBorder(Color.BLACK)));
 		container.add(wp, BorderLayout.CENTER);
 		createMenus();
 		createAnimationControls();
@@ -343,16 +352,16 @@ public class Visualizer {
 	}
 
 	private void createAnimationControls() {
-		Font sliderFont = new Font("Arial", Font.PLAIN, 12);
+		Font sliderFont = new Font("Arial", Font.PLAIN, 7);
 
 		animationControls = new JPanel();
 		animationControls.setLayout(
 				new BoxLayout(animationControls, BoxLayout.PAGE_AXIS));
-		animationControls.setSize(
-				new Dimension(GlobalCfg.canvasSizeX, GlobalCfg.controlSize));
+		animationControls.setSize(new Dimension(GlobalCfg.controlPanelSizeX,
+				GlobalCfg.controlPanelSizeY));
 
-		JLabel manualLabel = new JLabel("Frame #");
-		manualLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		JLabel manualLabel = new JLabel("Frame Position");
+		manualLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		manualSlider = new JSlider(JSlider.HORIZONTAL);
 		manualSlider.setPaintTicks(true);
 		manualSlider.setPaintLabels(true);
@@ -362,13 +371,11 @@ public class Visualizer {
 		manualSlider.setMinorTickSpacing(1);
 		manualSlider.addComponentListener(resizeListener);
 
-		JLabel framerateLabel = new JLabel("Framerate");
-		framerateLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		JLabel framerateLabel = new JLabel("Frame Rate");
+		framerateLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		framerateSlider = new JSlider(JSlider.HORIZONTAL,
 				GlobalCfg.frameRateMin, GlobalCfg.frameRateMax,
 				GlobalCfg.frameRateInit);
-		framerateSlider.setMajorTickSpacing(10);
-		framerateSlider.setMinorTickSpacing(1);
 		framerateSlider.setPaintTicks(true);
 		framerateSlider.setPaintLabels(true);
 		framerateSlider
@@ -402,7 +409,7 @@ public class Visualizer {
 		animationControls.add(p2);
 		animationControls.setVisible(true);
 		animationControls
-				.setBorder(BorderFactory.createEmptyBorder(0, 10, 5, 10));
+				.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		container.add(animationControls, BorderLayout.SOUTH);
 	}
 

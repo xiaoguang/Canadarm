@@ -2,13 +2,14 @@ package comp;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
 import java.util.List;
 
 import javax.swing.JComponent;
@@ -16,13 +17,14 @@ import javax.swing.Timer;
 
 import comp.RobotState.RobotStateOutPut;
 import solve.Visualizer;
-import utils.GlobalCfg;
 
 public class VisualizationPanel extends JComponent {
 
 	private static final long serialVersionUID = 4825793222637922728L;
 
 	public ProblemAndSolution probNSolt = new ProblemAndSolution();
+
+	private Image bgImage;
 	private Visualizer visualizer;
 	private AffineTransform translation = AffineTransform
 			.getTranslateInstance(0, -1);
@@ -48,8 +50,9 @@ public class VisualizationPanel extends JComponent {
 	private VisualizationPanel() {
 	}
 
-	public VisualizationPanel(Visualizer visualizer) {
+	public VisualizationPanel(Visualizer visualizer, Image img) {
 		super();
+		this.bgImage = img;
 		this.setBackground(Color.WHITE);
 		this.setOpaque(true);
 		this.visualizer = visualizer;
@@ -154,7 +157,7 @@ public class VisualizationPanel extends JComponent {
 		}
 
 		g2.setColor(color);
-		g2.setStroke(new BasicStroke(2f));
+		g2.setStroke(new BasicStroke(3f));
 
 		// Robot
 		for (int i = 0; i < rs.joints.size() - 1; i++) {
@@ -163,6 +166,19 @@ public class VisualizationPanel extends JComponent {
 			g2.draw(transform.createTransformedShape(
 					new Line2D.Double(p.X, p.Y, q.X, q.Y)));
 		}
+	}
+
+	private void paintObstacle(Graphics2D g2, BoundingBox box, Color color) {
+		if ((g2 == null) || (box == null) || (color == null)) {
+			System.exit(-1);
+		}
+
+		g2.setColor(color);
+		g2.setStroke(new BasicStroke(3f));
+
+		Rectangle2D.Double o = new Rectangle2D.Double(box.bl.X, box.bl.Y,
+				(box.tr.X - box.bl.X), (box.tr.Y - box.bl.Y));
+		g2.fill(transform.createTransformedShape(o));
 	}
 
 	/*-
@@ -206,11 +222,6 @@ public class VisualizationPanel extends JComponent {
 	}
 
 	@Override
-	public Dimension getPreferredSize() {
-		return new Dimension(GlobalCfg.canvasSize, GlobalCfg.canvasSize);
-	}
-
-	@Override
 	public void paintComponent(Graphics graphics) {
 		super.paintComponent(graphics);
 		if (!this.probNSolt.isProblemLoaded()) {
@@ -220,10 +231,14 @@ public class VisualizationPanel extends JComponent {
 		Graphics2D g2 = (Graphics2D) graphics;
 		g2.setColor(Color.WHITE);
 		g2.fillRect(0, 0, getWidth(), getHeight());
+		g2.drawImage(this.bgImage, 0, 0, null);
 
 		System.out.println("[Paint] : " + this.probNSolt.board.state);
 		this.paintRobot(g2, this.probNSolt.board.state, Color.BLUE);
 		this.paintRobot(g2, Board.goalRobotState, Color.GREEN);
+
+		for (BoundingBox ob : Board.obstacles)
+			this.paintObstacle(g2, ob, Color.WHITE);
 
 		/*-
 		if (this.obstacles != null) {
