@@ -34,7 +34,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JSlider;
-import javax.swing.JSpinner;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -64,7 +63,6 @@ public class Visualizer {
 
 	private JSlider manualSlider;
 	private JSlider framerateSlider;
-	private JSpinner samplingSpinner;
 
 	protected ImageIcon createImageIcon(String path, String description) {
 		java.net.URL imgURL = getClass().getResource(path);
@@ -232,13 +230,6 @@ public class Visualizer {
 		}
 	};
 
-	private ChangeListener samplingListener = new ChangeListener() {
-		@Override
-		public void stateChanged(ChangeEvent e) {
-			vp.setSamplingPeriod((Integer) samplingSpinner.getValue());
-		}
-	};
-
 	private ActionListener playPauseListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
@@ -353,26 +344,39 @@ public class Visualizer {
 
 	private void createAnimationControls() {
 		Font sliderFont = new Font("Arial", Font.PLAIN, 7);
+		Font lableFont = new Font("Arial", Font.BOLD, 11);
 
 		animationControls = new JPanel();
 		animationControls.setLayout(
 				new BoxLayout(animationControls, BoxLayout.PAGE_AXIS));
 		animationControls.setSize(new Dimension(GlobalCfg.controlPanelSizeX,
 				GlobalCfg.controlPanelSizeY));
+		animationControls.add(new JSeparator(JSeparator.HORIZONTAL));
 
-		JLabel manualLabel = new JLabel("Frame Position");
-		manualLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		JLabel manualLabel = new JLabel("Position");
+		manualLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		manualLabel.setFont(lableFont);
+
 		manualSlider = new JSlider(JSlider.HORIZONTAL);
 		manualSlider.setPaintTicks(true);
 		manualSlider.setPaintLabels(true);
 		manualSlider.setFont(sliderFont);
+		manualSlider.setLabelTable(manualSlider.createStandardLabels(10, 10));
 		manualSlider.addChangeListener(manualSliderListener);
 		manualSlider.addMouseListener(manualSliderClickListener);
 		manualSlider.setMinorTickSpacing(1);
 		manualSlider.addComponentListener(resizeListener);
 
-		JLabel framerateLabel = new JLabel("Frame Rate");
-		framerateLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		JPanel manualPanel = new JPanel();
+		manualPanel.setLayout(new BoxLayout(manualPanel, BoxLayout.PAGE_AXIS));
+		manualPanel.add(manualLabel);
+		manualPanel.add(Box.createRigidArea(new Dimension(0, 2)));
+		manualPanel.add(manualSlider);
+
+		JLabel framerateLabel = new JLabel("Rate");
+		framerateLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		framerateLabel.setFont(lableFont);
+
 		framerateSlider = new JSlider(JSlider.HORIZONTAL,
 				GlobalCfg.frameRateMin, GlobalCfg.frameRateMax,
 				GlobalCfg.frameRateInit);
@@ -382,6 +386,7 @@ public class Visualizer {
 				.setLabelTable(framerateSlider.createStandardLabels(10, 10));
 		framerateSlider.setFont(sliderFont);
 		framerateSlider.addChangeListener(framerateListener);
+
 		JPanel frameratePanel = new JPanel();
 		frameratePanel
 				.setLayout(new BoxLayout(frameratePanel, BoxLayout.PAGE_AXIS));
@@ -394,19 +399,18 @@ public class Visualizer {
 		stopButton = new JButton(stopIcon);
 		stopButton.addActionListener(stopListener);
 
-		animationControls.add(new JSeparator(JSeparator.HORIZONTAL));
-		animationControls.add(Box.createRigidArea(new Dimension(0, 2)));
-		animationControls.add(manualLabel);
-		animationControls.add(Box.createRigidArea(new Dimension(0, 2)));
-		animationControls.add(manualSlider);
-		animationControls.add(Box.createRigidArea(new Dimension(0, 5)));
 		JPanel p2 = new JPanel();
 		p2.setLayout(new BoxLayout(p2, BoxLayout.LINE_AXIS));
 		p2.add(playPauseButton);
-		p2.add(Box.createRigidArea(new Dimension(10, 0)));
-		p2.add(stopButton);
-		p2.add(frameratePanel);
+		p2.add(manualPanel);
+
+		JPanel p3 = new JPanel();
+		p3.setLayout(new BoxLayout(p3, BoxLayout.LINE_AXIS));
+		p3.add(stopButton);
+		p3.add(frameratePanel);
+
 		animationControls.add(p2);
+		animationControls.add(p3);
 		animationControls.setVisible(true);
 		animationControls
 				.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));

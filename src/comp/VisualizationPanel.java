@@ -8,6 +8,7 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
@@ -17,6 +18,7 @@ import javax.swing.Timer;
 
 import comp.RobotState.RobotStateOutPut;
 import solve.Visualizer;
+import utils.GlobalCfg;
 
 public class VisualizationPanel extends JComponent {
 
@@ -181,6 +183,22 @@ public class VisualizationPanel extends JComponent {
 		g2.fill(transform.createTransformedShape(o));
 	}
 
+	private void paintGrapple(Graphics2D g2, Coordinate gpl, Color color) {
+		if ((g2 == null) || (gpl == null) || (color == null)) {
+			System.exit(-1);
+		}
+
+		g2.setColor(color);
+		g2.setStroke(new BasicStroke(3f));
+
+		double X = gpl.X - GlobalCfg.gpRadius;
+		double Y = gpl.Y - GlobalCfg.gpRadius;
+
+		Ellipse2D.Double g = new Ellipse2D.Double(X, Y, 2 * GlobalCfg.gpRadius,
+				2 * GlobalCfg.gpRadius);
+		g2.fill(transform.createTransformedShape(g));
+	}
+
 	/*-
 	public void paintState(Graphics2D g2, RobotConfig rc, List<Box> mb,
 			List<Box> mo) {
@@ -239,6 +257,9 @@ public class VisualizationPanel extends JComponent {
 
 		for (BoundingBox ob : Board.obstacles)
 			this.paintObstacle(g2, ob, Color.WHITE);
+
+		for (Coordinate gpl : Board.grapples)
+			this.paintGrapple(g2, gpl, Color.RED);
 
 		/*-
 		if (this.obstacles != null) {
