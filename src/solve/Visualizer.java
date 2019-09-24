@@ -38,12 +38,13 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import comp.VisualizationPanel;
+import utils.CommandType;
 import utils.GlobalCfg;
 
 public class Visualizer {
 
 	private Container container;
-	private VisualizationPanel vp;
+	private VisualizationPanel visualPanel;
 
 	private JPanel animationControls;
 
@@ -54,34 +55,20 @@ public class Visualizer {
 	private JMenuItem initializeItem;
 	private JMenuItem playPauseItem;
 	private JMenuItem stopItem;
-	private JMenuItem problemItem;
-	private JMenuItem solutionItem;
 
 	private JMenu fileMenu;
-	private JMenu displayMenu;
 	private JMenu animationMenu;
 
 	private JSlider manualSlider;
 	private JSlider framerateSlider;
 
-	protected ImageIcon createImageIcon(String path, String description) {
-		java.net.URL imgURL = getClass().getResource(path);
-		if (imgURL != null) {
-			return new ImageIcon(imgURL, description);
-		}
-		return new ImageIcon(path, description);
-	}
+	private JButton playPauseButton;
+	private JButton stopButton;
 
-	protected Image createImage(ImageIcon icon) {
-		return icon.getImage();
-	}
-
-	private JButton playPauseButton, stopButton;
-	private ImageIcon playIcon = createImageIcon("assets/play.gif", "Play");
-	private ImageIcon pauseIcon = createImageIcon("assets/pause.gif", "Pause");
-	private ImageIcon stopIcon = createImageIcon("assets/stop.gif", "Stop");
-	private Image bgImage = createImage(
-			createImageIcon("assets/background_1.png", "BackGround"));
+	private ImageIcon playIcon;
+	private ImageIcon pauseIcon;
+	private ImageIcon stopIcon;
+	private Image bgImage;
 
 	private boolean animating;
 	private boolean wasPlaying;
@@ -90,15 +77,11 @@ public class Visualizer {
 	private boolean hasSolution;
 
 	private File defaultPath;
+	private ResizeListener resizeListener;
+	private MenuListener menuListener;
 
 	@SuppressWarnings("unused")
 	private Visualizer() {
-	}
-
-	public Visualizer(Container container, File defaultPath) {
-		this.container = container;
-		this.defaultPath = defaultPath;
-		createComponents();
 	}
 
 	public Visualizer(Container container) {
@@ -108,16 +91,26 @@ public class Visualizer {
 		} catch (IOException e) {
 			this.defaultPath = null;
 		}
+
+		this.playIcon = createImageIcon("assets/play.gif", "Play");
+		this.pauseIcon = createImageIcon("assets/pause.gif", "Pause");
+		this.stopIcon = createImageIcon("assets/stop.gif", "Stop");
+		this.bgImage = createImage(
+				createImageIcon("assets/background_1.png", "BackGround"));
+
+		this.resizeListener = new ResizeListener();
+		this.menuListener = new MenuListener();
+
 		createComponents();
 	}
 
 	public static void main(String[] args) {
 		JFrame frame = new JFrame("Canadarm Visualizer");
-		Visualizer vis = new Visualizer(frame);
+		Visualizer visualizer = new Visualizer(frame);
 		if (args.length > 0) {
-			vis.loadProblem(new File(args[0]));
-			if (vis.hasProblem() && args.length >= 2) {
-				vis.loadSolution(new File(args[1]));
+			visualizer.loadProblem(new File(args[0]));
+			if (visualizer.hasProblem() && args.length >= 2) {
+				visualizer.loadSolution(new File(args[1]));
 			}
 		}
 		frame.setSize(GlobalCfg.frameSizeX, GlobalCfg.frameSizeY);
@@ -130,144 +123,42 @@ public class Visualizer {
 		frame.setVisible(true);
 	}
 
-	private class MenuListener implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
-			String cmd = e.getActionCommand();
-			if (cmd.equals("Problem")) {
-				setAnimating(false);
-				vp.setDisplayingSolution(false);
-				vp.repaint();
-			} else if (cmd.equals("Solution")) {
-				setAnimating(false);
-				vp.setDisplayingSolution(true);
-				vp.repaint();
-			} else if (cmd.equals("Load problem")) {
-				setAnimating(false);
-				loadProblem();
-			} else if (cmd.equals("Load solution")) {
-				setAnimating(false);
-				loadSolution();
-			} else if (cmd.equals("Exit")) {
-				container.setVisible(false);
-				System.exit(0);
-			} else if (cmd.equals("Initialize")) {
-				setAnimating(true);
-			} else if (cmd.equals("Play")) {
-				playPause();
-			} else if (cmd.equals("Pause")) {
-				playPause();
-			} else if (cmd.equals("Stop")) {
-				setAnimating(false);
-			}
+	private ImageIcon createImageIcon(String path, String description) {
+		java.net.URL imgURL = getClass().getResource(path);
+		if (imgURL != null) {
+			return new ImageIcon(imgURL, description);
 		}
+		return new ImageIcon(path, description);
 	}
 
-	private class ResizeListener implements ComponentListener {
-		@Override
-		public void componentResized(ComponentEvent e) {
-			updateTickSpacing();
-		}
-
-		@Override
-		public void componentHidden(ComponentEvent e) {
-		}
-
-		@Override
-		public void componentMoved(ComponentEvent e) {
-		}
-
-		@Override
-		public void componentShown(ComponentEvent e) {
-		}
+	private Image createImage(ImageIcon icon) {
+		return icon.getImage();
 	}
-
-	private ResizeListener resizeListener = new ResizeListener();
-	private MenuListener menuListener = new MenuListener();
-
-	private ChangeListener manualSliderListener = new ChangeListener() {
-		@Override
-		public void stateChanged(ChangeEvent e) {
-			if (!manualSlider.getValueIsAdjusting() && wasPlaying) {
-				wasPlaying = false;
-				if (manualSlider.getValue() < manualSlider.getMaximum()) {
-					vp.playPauseAnimation();
-				}
-			}
-			vp.gotoFrame(manualSlider.getValue());
-		}
-	};
-
-	private MouseListener manualSliderClickListener = new MouseListener() {
-		@Override
-		public void mousePressed(MouseEvent e) {
-			if (playing) {
-				wasPlaying = true;
-				vp.playPauseAnimation();
-			}
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {
-		}
-
-		@Override
-		public void mouseClicked(MouseEvent e) {
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e) {
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e) {
-		}
-	};
-
-	private ChangeListener framerateListener = new ChangeListener() {
-		@Override
-		public void stateChanged(ChangeEvent e) {
-			vp.setFramerate(framerateSlider.getValue());
-		}
-	};
-
-	private ActionListener playPauseListener = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			playPause();
-		}
-	};
-
-	private ActionListener stopListener = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			setAnimating(false);
-		}
-	};
 
 	private void createComponents() {
 		this.wasPlaying = false;
-		vp = new VisualizationPanel(this, this.bgImage);
-		vp.setSize(new Dimension(GlobalCfg.displayPanelSize,
+		this.visualPanel = new VisualizationPanel(this, this.bgImage);
+		this.visualPanel.setSize(new Dimension(GlobalCfg.displayPanelSize,
 				GlobalCfg.displayPanelSize));
-		JPanel wp = new JPanel(new BorderLayout());
-		wp.add(vp, BorderLayout.CENTER);
-		wp.setSize(GlobalCfg.displayPanelSize, GlobalCfg.displayPanelSize);
-		container.setLayout(new BorderLayout());
-		wp.setBorder(BorderFactory.createCompoundBorder(
+		JPanel displayPanel = new JPanel(new BorderLayout());
+		displayPanel.add(this.visualPanel, BorderLayout.CENTER);
+		displayPanel.setSize(GlobalCfg.displayPanelSize,
+				GlobalCfg.displayPanelSize);
+		this.container.setLayout(new BorderLayout());
+		displayPanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createEmptyBorder(4, 4, 4, 4),
 				BorderFactory.createLineBorder(Color.BLACK)));
-		container.add(wp, BorderLayout.CENTER);
+		this.container.add(displayPanel, BorderLayout.CENTER);
 		createMenus();
 		createAnimationControls();
 	}
 
 	private void createMenus() {
-		menuBar = new JMenuBar();
+		this.menuBar = new JMenuBar();
 		createFileMenu();
-		createDisplayMenu();
 		createAnimationMenu();
-		if (container instanceof JFrame) {
-			((JFrame) container).setJMenuBar(menuBar);
+		if (this.container instanceof JFrame) {
+			((JFrame) container).setJMenuBar(this.menuBar);
 		}
 	}
 
@@ -294,26 +185,6 @@ public class Visualizer {
 		exitItem.setMnemonic(KeyEvent.VK_X);
 		exitItem.addActionListener(menuListener);
 		fileMenu.add(exitItem);
-	}
-
-	private void createDisplayMenu() {
-		displayMenu = new JMenu("Display");
-		displayMenu.setMnemonic(KeyEvent.VK_D);
-		fileMenu.getAccessibleContext()
-				.setAccessibleDescription("Display the problem and solution.");
-		menuBar.add(displayMenu);
-
-		problemItem = new JMenuItem("Problem");
-		problemItem.setMnemonic(KeyEvent.VK_P);
-		problemItem.addActionListener(menuListener);
-		problemItem.setEnabled(false);
-		displayMenu.add(problemItem);
-
-		solutionItem = new JMenuItem("Solution");
-		solutionItem.setMnemonic(KeyEvent.VK_S);
-		solutionItem.addActionListener(menuListener);
-		solutionItem.setEnabled(false);
-		displayMenu.add(solutionItem);
 	}
 
 	private void createAnimationMenu() {
@@ -432,7 +303,8 @@ public class Visualizer {
 
 	private void loadProblem(File f) {
 		try {
-			vp.getProblemAndSolution().readProblemFromInput(f.getPath());
+			this.visualPanel.getProblemAndSolution()
+					.readProblemFromInput(f.getPath());
 			setHasProblem(true);
 		} catch (Exception e1) {
 			showFileError(f);
@@ -450,7 +322,8 @@ public class Visualizer {
 
 	private void loadSolution(File f) {
 		try {
-			vp.getProblemAndSolution().readSolutionFromInput(f.getPath());
+			this.visualPanel.getProblemAndSolution()
+					.readSolutionFromInput(f.getPath());
 			setHasSolution(true);
 		} catch (Exception e1) {
 			showFileError(f);
@@ -470,47 +343,45 @@ public class Visualizer {
 		if (!animating) {
 			setAnimating(true);
 		}
-		vp.playPauseAnimation();
+		this.visualPanel.playPauseAnimation();
 	}
 
 	private void setHasProblem(boolean hasProblem) {
 		this.hasProblem = hasProblem;
 		loadSolutionItem.setEnabled(hasProblem);
-		problemItem.setEnabled(hasProblem);
 		setHasSolution(false);
-		vp.repaint();
-	}
-
-	public boolean hasProblem() {
-		return hasProblem;
+		this.visualPanel.repaint();
 	}
 
 	private void setHasSolution(boolean hasSolution) {
 		this.hasSolution = hasSolution;
-		solutionItem.setEnabled(hasSolution);
 		animationMenu.setEnabled(hasSolution);
-		vp.setDisplayingSolution(hasSolution);
+		this.visualPanel.setDisplayingSolution(hasSolution);
 		setAnimating(hasSolution);
-		vp.repaint();
+		this.visualPanel.repaint();
 	}
 
 	public boolean hasSolution() {
 		return hasSolution;
 	}
 
+	public boolean hasProblem() {
+		return hasProblem;
+	}
+
 	private void setAnimating(boolean animating) {
 		if (animating) {
-			vp.initAnimation();
+			this.visualPanel.initAnimation();
 		} else {
-			vp.stopAnimation();
+			this.visualPanel.stopAnimation();
 		}
 		if (this.animating == animating) {
 			return;
 		}
 		this.animating = animating;
-		stopItem.setEnabled(animating);
-		container.validate();
-		vp.repaint();
+		this.stopItem.setEnabled(animating);
+		this.container.validate();
+		this.visualPanel.repaint();
 	}
 
 	public void setPlaying(boolean playing) {
@@ -529,8 +400,8 @@ public class Visualizer {
 	}
 
 	public void updateMaximum() {
-		int maximum = vp.probNSolt.robotStates.size() - 1;
-		manualSlider.setMaximum(maximum);
+		int maximum = this.visualPanel.probNSolt.robotStates.size() - 1;
+		this.manualSlider.setMaximum(maximum);
 		updateTickSpacing();
 	}
 
@@ -574,5 +445,118 @@ public class Visualizer {
 	public void setFrameNumber(int frameNumber) {
 		manualSlider.setValue(frameNumber);
 	}
+
+	private class MenuListener implements ActionListener {
+		public void actionPerformed(ActionEvent event) {
+			CommandType cmd = CommandType.valueOf(event.getActionCommand()
+					.trim().toUpperCase().replaceAll("\\s+", ""));
+			switch (cmd) {
+			case LOADPROBLEM:
+				setAnimating(false);
+				loadProblem();
+				break;
+			case LOADSOLUTION:
+				setAnimating(false);
+				loadSolution();
+				break;
+			case EXIT:
+				System.exit(0);
+				break;
+			case INITIALIZE:
+				setAnimating(true);
+				break;
+			case PLAY:
+				playPause();
+				break;
+			case PAUSE:
+				playPause();
+				break;
+			case STOP:
+				setAnimating(false);
+				break;
+			default:
+				System.exit(-1);
+			}
+		}
+	}
+
+	private class ResizeListener implements ComponentListener {
+		@Override
+		public void componentResized(ComponentEvent e) {
+			updateTickSpacing();
+		}
+
+		@Override
+		public void componentHidden(ComponentEvent e) {
+		}
+
+		@Override
+		public void componentMoved(ComponentEvent e) {
+		}
+
+		@Override
+		public void componentShown(ComponentEvent e) {
+		}
+	}
+
+	private MouseListener manualSliderClickListener = new MouseListener() {
+		@Override
+		public void mousePressed(MouseEvent e) {
+			if (playing) {
+				wasPlaying = true;
+				visualPanel.playPauseAnimation();
+			}
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+		}
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+		}
+	};
+
+	private ChangeListener manualSliderListener = new ChangeListener() {
+		@Override
+		public void stateChanged(ChangeEvent e) {
+			if (!manualSlider.getValueIsAdjusting() && wasPlaying) {
+				wasPlaying = false;
+				if (manualSlider.getValue() < manualSlider.getMaximum()) {
+					visualPanel.playPauseAnimation();
+				}
+			}
+			visualPanel.gotoFrame(manualSlider.getValue());
+		}
+	};
+
+	private ChangeListener framerateListener = new ChangeListener() {
+		@Override
+		public void stateChanged(ChangeEvent e) {
+			visualPanel.setFramerate(framerateSlider.getValue());
+		}
+	};
+
+	private ActionListener playPauseListener = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			playPause();
+		}
+	};
+
+	private ActionListener stopListener = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			setAnimating(false);
+		}
+	};
 
 }
