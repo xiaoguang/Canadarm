@@ -2,6 +2,7 @@ package comp;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -149,6 +150,8 @@ public class VisualizationPanel extends JComponent {
 	}
 
 	public void calculateTransform() {
+		System.out.println(getWidth());
+		System.out.println(getHeight());
 		transform = AffineTransform.getScaleInstance(getWidth(), -getHeight());
 		transform.concatenate(translation);
 	}
@@ -168,6 +171,36 @@ public class VisualizationPanel extends JComponent {
 			g2.draw(transform.createTransformedShape(
 					new Line2D.Double(p.X, p.Y, q.X, q.Y)));
 		}
+
+		double X1 = (rs.ee1.X
+				+ (Math.cos(rs.ee1Segments.get(0).angle.radian + Math.PI)
+						* GlobalCfg.eeLabelOffset))
+				* GlobalCfg.displayPanelSize;
+		double Y1 = (1 - (rs.ee1.Y
+				+ (Math.sin(rs.ee1Segments.get(0).angle.radian + Math.PI)
+						* GlobalCfg.eeLabelOffset)))
+				* GlobalCfg.displayPanelSize;
+
+		double X2 = (rs.ee2.X
+				+ (Math.cos(rs.ee2Segments.get(0).angle.radian + Math.PI)
+						* GlobalCfg.eeLabelOffset))
+				* GlobalCfg.displayPanelSize;
+
+		double Y2 = (1 - (rs.ee2.Y
+				+ (Math.sin(rs.ee2Segments.get(0).angle.radian + Math.PI)
+						* GlobalCfg.eeLabelOffset)))
+				* GlobalCfg.displayPanelSize;
+
+		FontMetrics fm = g2.getFontMetrics();
+
+		X1 = X1 - fm.stringWidth("ee1") / 2;
+		X2 = X2 - fm.stringWidth("ee2") / 2;
+
+		Y1 = Y1 + fm.getAscent() / 2;
+		Y2 = Y2 + fm.getAscent() / 2;
+
+		g2.drawString("ee1", (float) X1, (float) Y1);
+		g2.drawString("ee2", (float) X2, (float) Y2);
 	}
 
 	private void paintObstacle(Graphics2D g2, BoundingBox box, Color color) {
@@ -245,22 +278,22 @@ public class VisualizationPanel extends JComponent {
 		if (!this.probNSolt.isProblemLoaded()) {
 			return;
 		}
-		calculateTransform();
+		this.setSize(GlobalCfg.displayPanelSize, GlobalCfg.displayPanelSize);
+		this.calculateTransform();
 		Graphics2D g2 = (Graphics2D) graphics;
 		g2.setColor(Color.WHITE);
 		g2.fillRect(0, 0, getWidth(), getHeight());
 		g2.drawImage(this.bgImage, 0, 0, null);
 
-		System.out.println("[Paint] : " + this.probNSolt.board.state);
-		this.paintRobot(g2, this.probNSolt.board.state, Color.BLUE);
-		this.paintRobot(g2, Board.goalRobotState, Color.GREEN);
-
+		// System.out.println("[Paint] : " + this.probNSolt.board.state);
 		for (BoundingBox ob : Board.obstacles)
 			this.paintObstacle(g2, ob, Color.WHITE);
 
 		for (Coordinate gpl : Board.grapples)
 			this.paintGrapple(g2, gpl, Color.RED);
 
+		this.paintRobot(g2, this.probNSolt.board.state, Color.BLUE);
+		this.paintRobot(g2, Board.goalRobotState, Color.GREEN);
 		/*-
 		if (this.obstacles != null) {
 			g2.setColor(Color.red);

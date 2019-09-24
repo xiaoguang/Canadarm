@@ -95,12 +95,17 @@ public class ProblemAndSolution {
 			}
 			if (grappleIndex == 2) {
 				Collections.reverse(segs);
-			}
+				state = RobotState.createRobotStateFromEE2(
+						new Coordinate(Double.parseDouble(coord[0]),
+								Double.parseDouble(coord[1])),
+						segs);
+			} else {
+				state = RobotState.createRobotStateFromEE1(
+						new Coordinate(Double.parseDouble(coord[0]),
+								Double.parseDouble(coord[1])),
+						segs);
 
-			state = new RobotState(grappleIndex,
-					new Coordinate(Double.parseDouble(coord[0]),
-							Double.parseDouble(coord[1])),
-					segs);
+			}
 			Board.initRobotState = state.clone();
 		}
 
@@ -128,12 +133,17 @@ public class ProblemAndSolution {
 			}
 			if (grappleIndex == 2) {
 				Collections.reverse(segs);
+				Board.goalRobotState = RobotState.createRobotStateFromEE2(
+						new Coordinate(Double.parseDouble(coord[0]),
+								Double.parseDouble(coord[1])),
+						segs);
+			} else {
+				Board.goalRobotState = RobotState.createRobotStateFromEE1(
+						new Coordinate(Double.parseDouble(coord[0]),
+								Double.parseDouble(coord[1])),
+						segs);
 			}
 
-			Board.goalRobotState = new RobotState(grappleIndex,
-					new Coordinate(Double.parseDouble(coord[0]),
-							Double.parseDouble(coord[1])),
-					segs);
 		}
 
 		idx += 1;

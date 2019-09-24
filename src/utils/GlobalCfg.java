@@ -21,7 +21,7 @@ public final class GlobalCfg {
 	public static final int controlPanelSizeX = 600;
 	public static final int controlPanelSizeY = 100;
 	public static final int frameSizeX = 610;
-	public static final int frameSizeY = 810;
+	public static final int frameSizeY = 800;
 
 	public static final int lineWidth = 3;
 	public static final double eeLabelOffset = 0.025;

@@ -23,6 +23,12 @@ public class Angle {
 		return this.radian;
 	}
 
+	public Angle negative() {
+		this.radian = -this.radian;
+		this.normalize();
+		return this;
+	}
+
 	public Angle add(Angle ang) {
 		this.radian += ang.radian;
 		this.normalize();

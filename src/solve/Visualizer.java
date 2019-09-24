@@ -112,7 +112,7 @@ public class Visualizer {
 	}
 
 	public static void main(String[] args) {
-		JFrame frame = new JFrame("Assignment 1 visualizer");
+		JFrame frame = new JFrame("Canadarm Visualizer");
 		Visualizer vis = new Visualizer(frame);
 		if (args.length > 0) {
 			vis.loadProblem(new File(args[0]));
@@ -251,11 +251,10 @@ public class Visualizer {
 				GlobalCfg.displayPanelSize));
 		JPanel wp = new JPanel(new BorderLayout());
 		wp.add(vp, BorderLayout.CENTER);
-		wp.setSize(new Dimension(GlobalCfg.displayPanelSize,
-				GlobalCfg.displayPanelSize));
+		wp.setSize(GlobalCfg.displayPanelSize, GlobalCfg.displayPanelSize);
 		container.setLayout(new BorderLayout());
 		wp.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createEmptyBorder(5, 5, 5, 5),
+				BorderFactory.createEmptyBorder(4, 4, 4, 4),
 				BorderFactory.createLineBorder(Color.BLACK)));
 		container.add(wp, BorderLayout.CENTER);
 		createMenus();
@@ -413,7 +412,7 @@ public class Visualizer {
 		animationControls.add(p3);
 		animationControls.setVisible(true);
 		animationControls
-				.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+				.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 		container.add(animationControls, BorderLayout.SOUTH);
 	}
 
@@ -510,9 +509,7 @@ public class Visualizer {
 		}
 		this.animating = animating;
 		stopItem.setEnabled(animating);
-		animationControls.setVisible(animating);
 		container.validate();
-		vp.calculateTransform();
 		vp.repaint();
 	}
 
