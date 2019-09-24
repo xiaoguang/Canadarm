@@ -2,6 +2,7 @@ package comp;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -12,7 +13,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
-import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.Timer;
@@ -35,19 +35,12 @@ public class VisualizationPanel extends JComponent {
 
 	// State Information
 	private RobotStateOutPut currentRobotState;
-	private List<BoundingBox> obstacles;
-	private RobotState initRobotState;
-	private RobotState goalRobotState;
-	private List<Coordinate> grapples;
 
 	private boolean animating = false;
-	private boolean displayingSolution = false;
 	private Timer animationTimer;
 	private int framePeriod = 20; // 50 FPS
 	private Integer frameNumber = null;
 	private int maxFrameNumber;
-
-	private int samplingPeriod = 100;
 
 	@SuppressWarnings("unused")
 	private VisualizationPanel() {
@@ -59,15 +52,6 @@ public class VisualizationPanel extends JComponent {
 		this.setBackground(Color.WHITE);
 		this.setOpaque(true);
 		this.visualizer = visualizer;
-	}
-
-	public void setDisplayingSolution(boolean displayingSolution) {
-		this.displayingSolution = displayingSolution;
-		repaint();
-	}
-
-	public boolean isDisplayingSolution() {
-		return displayingSolution;
 	}
 
 	public void setFramerate(int framerate) {
@@ -112,10 +96,32 @@ public class VisualizationPanel extends JComponent {
 		this.frameNumber = frameNumber;
 		this.visualizer.setFrameNumber(frameNumber);
 		this.currentRobotState = this.probNSolt.robotStates.get(frameNumber);
-		this.obstacles = Board.obstacles;
-		this.initRobotState = Board.initRobotState;
-		this.goalRobotState = Board.goalRobotState;
-		this.grapples = Board.grapples;
+		if (this.currentRobotState.ee.equals(this.probNSolt.board.state.ee1)) {
+			// System.out.println("Grapple 1");
+			this.probNSolt.board.state.ee1Grappled = true;
+			this.probNSolt.board.state.ee2Grappled = false;
+
+			for (int i = 0; i < this.currentRobotState.angles.size(); i++) {
+				Segment local = this.probNSolt.board.state.segments.get(i);
+				local.angle = this.currentRobotState.angles.get(i);
+				local.len = this.currentRobotState.lengths.get(i);
+			}
+
+			this.probNSolt.board.state.calcJoints();
+		}
+		if (this.currentRobotState.ee.equals(this.probNSolt.board.state.ee2)) {
+			// System.out.println("Grapple 2");
+			this.probNSolt.board.state.ee1Grappled = false;
+			this.probNSolt.board.state.ee2Grappled = true;
+
+			for (int i = 0; i < this.currentRobotState.angles.size(); i++) {
+				Segment local = this.probNSolt.board.state.segments.get(i);
+				local.angle = this.currentRobotState.angles.get(i);
+				local.len = this.currentRobotState.lengths.get(i);
+			}
+
+			this.probNSolt.board.state.calcJoints();
+		}
 		repaint();
 	}
 
@@ -199,8 +205,10 @@ public class VisualizationPanel extends JComponent {
 		Y1 = Y1 + fm.getAscent() / 2;
 		Y2 = Y2 + fm.getAscent() / 2;
 
-		g2.drawString("ee1", (float) X1, (float) Y1);
-		g2.drawString("ee2", (float) X2, (float) Y2);
+		Font font = new Font("SERIF", Font.BOLD, 15);
+		g2.setFont(font);
+		g2.drawString("EE1", (float) X1, (float) Y1);
+		g2.drawString("EE2", (float) X2, (float) Y2);
 	}
 
 	private void paintObstacle(Graphics2D g2, BoundingBox box, Color color) {
@@ -232,52 +240,13 @@ public class VisualizationPanel extends JComponent {
 		g2.fill(transform.createTransformedShape(g));
 	}
 
-	/*-
-	public void paintState(Graphics2D g2, RobotConfig rc, List<Box> mb,
-			List<Box> mo) {
-		if ((rc == null) || (mb == null) || (mo == null)) {
-			return;
-		}
-		// Define Robot
-		Line2D.Float robot = new Line2D.Float(
-				rc.getX1(problemSetup.getRobotWidth()),
-				rc.getY1(problemSetup.getRobotWidth()),
-				rc.getX2(problemSetup.getRobotWidth()),
-				rc.getY2(problemSetup.getRobotWidth()));
-	
-		// Draw Moving Boxes
-		g2.setColor(Color.blue);
-		g2.draw(robot);
-		for (Box box : mb) {
-			g2.draw(transform.createTransformedShape(box.getRect()));
-		}
-	
-		// Draw Moving Obstacles
-		g2.setColor(Color.orange);
-		g2.draw(robot);
-		for (Box box : mo) {
-			g2.draw(transform.createTransformedShape(box.getRect()));
-		}
-	
-		// Draw Robot last so it's on top
-		g2.setColor(Color.black);
-		g2.setStroke(new BasicStroke(2));
-		g2.draw(transform.createTransformedShape(robot));
-	
-	}
-	*/
-
-	public void setSamplingPeriod(int samplingPeriod) {
-		this.samplingPeriod = samplingPeriod;
-		repaint();
-	}
-
 	@Override
 	public void paintComponent(Graphics graphics) {
 		super.paintComponent(graphics);
 		if (!this.probNSolt.isProblemLoaded()) {
 			return;
 		}
+
 		this.setSize(GlobalCfg.displayPanelSize, GlobalCfg.displayPanelSize);
 		this.calculateTransform();
 		Graphics2D g2 = (Graphics2D) graphics;
@@ -287,73 +256,23 @@ public class VisualizationPanel extends JComponent {
 
 		// System.out.println("[Paint] : " + this.probNSolt.board.state);
 		for (BoundingBox ob : Board.obstacles)
-			this.paintObstacle(g2, ob, Color.WHITE);
+			this.paintObstacle(g2, ob, GlobalCfg.obstacleColor);
 
 		for (Coordinate gpl : Board.grapples)
-			this.paintGrapple(g2, gpl, Color.RED);
+			this.paintGrapple(g2, gpl, GlobalCfg.grapplesColor);
 
-		this.paintRobot(g2, this.probNSolt.board.state, Color.BLUE);
-		this.paintRobot(g2, Board.goalRobotState, Color.GREEN);
-		/*-
-		if (this.obstacles != null) {
-			g2.setColor(Color.red);
-			for (BoundingBox ob : this.obstacles) {
-				Shape transformed = transform
-						.createTransformedShape(ob.getRect());
-				g2.draw(transformed);
+		if (this.animating) {
+			if (!this.probNSolt.isSolutionLoaded()) {
+				return;
 			}
-		}
-		
-		List<Box> movingBoxEndPositions = generateMovingBoxes(
-				problemSetup.getMovingBoxEndPositions());
-		g2.setColor(Color.green);
-		for (Box box : movingBoxEndPositions) {
-			Shape transformed = transform.createTransformedShape(box.getRect());
-			g2.draw(transformed);
-		}
-		
-		g2.setStroke(new BasicStroke(2));
-		if (!animating) {
-			if (displayingSolution) {
-				List<RobotConfig> robotConfigPath = problemSetup.getRobotPath();
-				List<List<Box>> movingBoxPath = problemSetup.getMovingBoxPath();
-				List<List<Box>> movingObstaclePath = problemSetup
-						.getMovingObstaclePath();
-				int lastIndex = robotConfigPath.size() - 1;
-				for (int i = 0; i < lastIndex; i += samplingPeriod) {
-					float t = (float) i / lastIndex;
-					g2.setColor(new Color(0, t, 1 - t));
-					paintState(g2, robotConfigPath.get(i), movingBoxPath.get(i),
-							movingObstaclePath.get(i));
-				}
-				g2.setColor(Color.green);
-				paintState(g2, robotConfigPath.get(lastIndex),
-						movingBoxPath.get(lastIndex),
-						movingObstaclePath.get(lastIndex));
-			} else {
-				paintState(g2, problemSetup.getInitialRobotConfig(),
-						problemSetup.getMovingBoxes(),
-						problemSetup.getMovingObstacles());
-			}
+			this.paintRobot(g2, this.probNSolt.board.state,
+					GlobalCfg.robotStateColor);
 		} else {
-			g2.setColor(Color.blue);
-			paintState(g2, currentRobotConfig, currentMovingBoxes,
-					currentMovingObstacles);
+			this.paintRobot(g2, Board.initRobotState,
+					GlobalCfg.robotStateColor);
+			this.paintRobot(g2, Board.goalRobotState,
+					GlobalCfg.targetStateColor);
 		}
-		*/
 	}
-
-	/*-
-	public List<Box> generateMovingBoxes(List<Point2D> movingBoxCentres) {
-		List<Box> movingBoxes = new ArrayList<>();
-		Point2D centre;
-		for (int i = 0; i < movingBoxCentres.size(); i++) {
-			centre = movingBoxCentres.get(i);
-			movingBoxes
-					.add(new MovingBox(centre, problemSetup.getRobotWidth()));
-		}
-		return movingBoxes;
-	}
-	*/
 
 }

@@ -35,7 +35,7 @@ public class RobotState {
 		this.ee2Grappled = ee2Grappled;
 		this.segments = segments;
 		this.joints = new ArrayList<Coordinate>();
-		calcJoints();
+		this.calcJoints();
 	}
 
 	public static RobotState createRobotStateFromEE1(Coordinate ee1,
@@ -50,7 +50,7 @@ public class RobotState {
 		return rs;
 	}
 
-	private void calcJoints() {
+	protected void calcJoints() {
 		this.joints.clear();
 
 		if (this.ee1Grappled) {

@@ -156,25 +156,25 @@ public class Visualizer {
 	private void createMenu() {
 		this.menuBar = new JMenuBar();
 
-		fileMenu = new JMenu("File");
+		fileMenu = new JMenu(GlobalCfg.file);
 		fileMenu.setMnemonic(KeyEvent.VK_F);
 		fileMenu.getAccessibleContext()
 				.setAccessibleDescription("Load configs or close the app.");
 		menuBar.add(fileMenu);
 
-		loadProblemItem = new JMenuItem("Load problem");
+		loadProblemItem = new JMenuItem(GlobalCfg.loadProblem);
 		loadProblemItem.setMnemonic(KeyEvent.VK_P);
 		loadProblemItem.addActionListener(menuListener);
 		fileMenu.add(loadProblemItem);
 
-		loadSolutionItem = new JMenuItem("Load solution");
+		loadSolutionItem = new JMenuItem(GlobalCfg.loadSolution);
 		loadSolutionItem.setMnemonic(KeyEvent.VK_S);
 		loadSolutionItem.addActionListener(menuListener);
 		loadSolutionItem.setEnabled(false);
 		fileMenu.add(loadSolutionItem);
 
 		fileMenu.addSeparator();
-		exitItem = new JMenuItem("Exit");
+		exitItem = new JMenuItem(GlobalCfg.exit);
 		exitItem.setMnemonic(KeyEvent.VK_X);
 		exitItem.addActionListener(menuListener);
 		fileMenu.add(exitItem);
@@ -354,7 +354,6 @@ public class Visualizer {
 
 	private void setHasSolution(boolean hasSolution) {
 		this.hasSolution = hasSolution;
-		this.visualPanel.setDisplayingSolution(hasSolution);
 		setAnimating(hasSolution);
 		this.visualPanel.repaint();
 	}

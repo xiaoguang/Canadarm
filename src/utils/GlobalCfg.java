@@ -1,5 +1,7 @@
 package utils;
 
+import java.awt.Color;
+
 public final class GlobalCfg {
 
 	public static final int prime1 = 7;
@@ -29,5 +31,11 @@ public final class GlobalCfg {
 	public static final String loadProblem = "Load Problem";
 	public static final String loadSolution = "Load Solution";
 	public static final String exit = "Exit";
+	public static final String file = "File";
+
+	public static final Color robotStateColor = Color.BLUE;
+	public static final Color targetStateColor = Color.GREEN;
+	public static final Color grapplesColor = Color.RED;
+	public static final Color obstacleColor = Color.WHITE;
 
 }
