@@ -38,7 +38,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import comp.VisualizationPanel;
-import utils.CommandType;
 import utils.GlobalCfg;
 
 public class Visualizer {
@@ -515,5 +514,9 @@ public class Visualizer {
 			setAnimating(false);
 		}
 	};
+
+	enum CommandType {
+		LOADPROBLEM, LOADSOLUTION, EXIT;
+	}
 
 }

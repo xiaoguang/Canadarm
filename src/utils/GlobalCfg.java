@@ -26,4 +26,8 @@ public final class GlobalCfg {
 	public static final int lineWidth = 3;
 	public static final double eeLabelOffset = 0.025;
 
+	public static final String loadProblem = "Load Problem";
+	public static final String loadSolution = "Load Solution";
+	public static final String exit = "Exit";
+
 }
