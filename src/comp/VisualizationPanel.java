@@ -130,15 +130,17 @@ public class VisualizationPanel extends JComponent {
 	}
 
 	public void playPauseAnimation() {
-		if (animationTimer.isRunning()) {
-			animationTimer.stop();
-			visualizer.setPlaying(false);
+		if (!this.probNSolt.isSolutionLoaded() || this.animationTimer == null)
+			return;
+		if (this.animationTimer.isRunning()) {
+			this.animationTimer.stop();
+			this.visualizer.setPlaying(false);
 		} else {
-			if (frameNumber >= maxFrameNumber) {
+			if (this.frameNumber >= this.maxFrameNumber) {
 				gotoFrame(0);
 			}
-			animationTimer.start();
-			visualizer.setPlaying(true);
+			this.animationTimer.start();
+			this.visualizer.setPlaying(true);
 		}
 	}
 
