@@ -9,7 +9,6 @@ public class Board {
 	public static RobotState goalRobotState;
 
 	RobotState state;
-	CollisionCheck checker;
 
 	public static final List<Coordinate> grapples = new ArrayList<Coordinate>();
 	public static final List<BoundingBox> obstacles = new ArrayList<BoundingBox>();
@@ -18,13 +17,61 @@ public class Board {
 	private Board() {
 	}
 
-	protected Board(RobotState state) {
+	public Board(RobotState state) {
 		this.state = state;
-		this.checker = new CollisionCheck();
 	}
 
 	public boolean testLengthConstraint() {
-		return this.state.testLengthConstraint();
+		for (Segment seg : this.state.segments) {
+			if (!seg.testLengthConstraint()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public boolean selfCollision() {
+		if (this.state.segments.size() < 3)
+			return false;
+		for (int i = 0; i < this.state.joints.size() - 2; i++) {
+			Coordinate c1 = this.state.joints.get(i);
+			Coordinate c2 = this.state.joints.get(i + 1);
+
+			for (int j = i + 2; j < this.state.joints.size() - 1; j++) {
+				Coordinate c3 = this.state.joints.get(j);
+				Coordinate c4 = this.state.joints.get(j + 1);
+
+				if (CollisionCheck.testLineCollision(c1, c2, c3, c4))
+					return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean obstacleCollision() {
+		for (int i = 0; i < this.state.joints.size() - 1; i++) {
+			Coordinate c1 = this.state.joints.get(i);
+			Coordinate c2 = this.state.joints.get(i + 1);
+			for (BoundingBox b : obstacles) {
+				if (!CollisionCheck.testBoundingBoxCollision(c1, c2, b.bl,
+						b.tr))
+					continue;
+
+				for (Line l : b.edges) {
+					if (CollisionCheck.testLineCollision(c1, c2, l.p, l.q))
+						return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public boolean collision() {
+		boolean collide = false;
+		collide = collide || this.testLengthConstraint();
+		collide = collide || this.selfCollision();
+		collide = collide || this.obstacleCollision();
+		return collide;
 	}
 
 	@Override
@@ -42,46 +89,17 @@ public class Board {
 		return str;
 	}
 
-	public boolean obstacleCollision() {
-		for (int i = 0; i < this.state.joints.size() - 1; i++) {
-			Coordinate c1 = this.state.joints.get(i);
-			Coordinate c2 = this.state.joints.get(i + 1);
-			for (BoundingBox b : obstacles) {
-				if (!checker.testBoundingBoxCollision(c1, c2, b.bl, b.tr))
-					continue;
-
-				for (Line l : b.edges) {
-					if (checker.testLineCollision(c1, c2, l.p, l.q))
-						return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	public boolean selfCollision() {
-		if (this.state.segments.size() < 3)
+	@Override
+	public boolean equals(Object object) {
+		if (object == null)
 			return false;
-		for (int i = 0; i < this.state.joints.size() - 2; i++) {
-			Coordinate c1 = this.state.joints.get(i);
-			Coordinate c2 = this.state.joints.get(i + 1);
+		if (object == this)
+			return true;
+		if (this.getClass() != object.getClass())
+			return false;
 
-			for (int j = i + 2; j < this.state.joints.size() - 1; j++) {
-				Coordinate c3 = this.state.joints.get(j);
-				Coordinate c4 = this.state.joints.get(j + 1);
-
-				if (checker.testLineCollision(c1, c2, c3, c4))
-					return true;
-			}
-		}
-		return false;
-	}
-
-	public boolean collision() {
-		boolean collide = false;
-		collide = collide || this.selfCollision();
-		collide = collide || this.obstacleCollision();
-		return collide;
+		Board b = (Board) object;
+		return this.equals(b);
 	}
 
 }

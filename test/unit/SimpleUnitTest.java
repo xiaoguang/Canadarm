@@ -6,6 +6,10 @@ import org.junit.Test;
 
 import comp.Angle;
 import comp.AngleInDegree;
+import comp.Board;
+import comp.LocalPlanner;
+import comp.ProblemAndSolution;
+import comp.RobotState;
 import utils.GlobalCfg;
 
 public class SimpleUnitTest {
@@ -57,5 +61,18 @@ public class SimpleUnitTest {
 		Angle a = new AngleInDegree(179.0);
 		assertTrue(Math.abs(a.getDegree() - (179.0)) <= GlobalCfg.epsilon);
 		assertTrue(Math.abs(a.getRadian() - (3.12414)) <= GlobalCfg.epsilon);
+	}
+
+	@Test
+	public void CollisionTest() throws Exception {
+		ProblemAndSolution probNSolt = new ProblemAndSolution();
+		LocalPlanner planner = new LocalPlanner();
+		probNSolt.readProblemFromInput("input/3g1_m0.txt");
+		RobotState from_state = Board.initRobotState.clone();
+		RobotState to_state = Board.goalRobotState.clone();
+		Board from = new Board(from_state);
+		Board to = new Board(to_state);
+		assertTrue(planner.validate(from, to));
+		assertTrue(planner.reachable(from, to));
 	}
 }

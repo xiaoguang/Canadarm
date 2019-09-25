@@ -99,15 +99,6 @@ public class RobotState {
 		}
 	}
 
-	public boolean testLengthConstraint() {
-		for (Segment seg : this.segments) {
-			if (!seg.testLengthConstraint()) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 	public String write() {
 		return new RobotStateOutPut(this).toString();
 	}

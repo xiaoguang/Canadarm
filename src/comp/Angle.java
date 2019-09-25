@@ -41,6 +41,18 @@ public class Angle {
 		return this;
 	}
 
+	public Angle addInRadian(double delta) {
+		this.radian += delta;
+		this.normalize();
+		return this;
+	}
+
+	public Angle minusInRadian(double delta) {
+		this.radian -= delta;
+		this.normalize();
+		return this;
+	}
+
 	public Angle multiply(Angle ang) {
 		this.radian *= ang.radian;
 		this.normalize();

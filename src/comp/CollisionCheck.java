@@ -2,7 +2,7 @@ package comp;
 
 public class CollisionCheck {
 
-	public boolean testBoundingBoxCollision(Coordinate p1, Coordinate q1,
+	public static boolean testBoundingBoxCollision(Coordinate p1, Coordinate q1,
 			Coordinate p2, Coordinate q2) {
 		double p1x = p1.X;
 		double p1y = p1.Y;
@@ -33,21 +33,23 @@ public class CollisionCheck {
 		return true;
 	}
 
-	public boolean testBoundingBoxCollision(BoundingBox b1, BoundingBox b2) {
+	public static boolean testBoundingBoxCollision(BoundingBox b1,
+			BoundingBox b2) {
 		return testBoundingBoxCollision(b1.bl, b1.tr, b2.bl, b2.tr);
 	}
 
-	public double determinant(Coordinate p, Coordinate q) {
-		return this.determinant(p.X, p.Y, q.X, q.Y);
+	public static double determinant(Coordinate p, Coordinate q) {
+		return determinant(p.X, p.Y, q.X, q.Y);
 	}
 
-	public double determinant(double px, double py, double qx, double qy) {
+	public static double determinant(double px, double py, double qx,
+			double qy) {
 		return px * qy - py * qx;
 	}
 
-	public int triangleOrientation(Coordinate p, Coordinate q, Coordinate r) {
-		double area = this.determinant(p, q) + this.determinant(q, r)
-				- this.determinant(p, r);
+	public static int triangleOrientation(Coordinate p, Coordinate q,
+			Coordinate r) {
+		double area = determinant(p, q) + determinant(q, r) - determinant(p, r);
 		if (area > 0)
 			return 1;
 		else if (area < 0)
@@ -55,30 +57,28 @@ public class CollisionCheck {
 		return 0;
 	}
 
-	public boolean testOrientationCollision(Coordinate p1, Coordinate q1,
+	public static boolean testOrientationCollision(Coordinate p1, Coordinate q1,
 			Coordinate p2, Coordinate q2) {
-		if (this.triangleOrientation(p1, q1, p2) == this.triangleOrientation(p1,
-				q1, q2))
+		if (triangleOrientation(p1, q1, p2) == triangleOrientation(p1, q1, q2))
 			return false;
-		if (this.triangleOrientation(p2, q2, p1) == this.triangleOrientation(p2,
-				q2, q1))
+		if (triangleOrientation(p2, q2, p1) == triangleOrientation(p2, q2, q1))
 			return false;
 		return true;
 	}
 
-	public boolean testLineCollision(Line l1, Line l2) {
+	public static boolean testLineCollision(Line l1, Line l2) {
 		Coordinate p1 = l1.p;
 		Coordinate q1 = l1.q;
 		Coordinate p2 = l2.p;
 		Coordinate q2 = l2.q;
-		return this.testLineCollision(p1, q1, p2, q2);
+		return testLineCollision(p1, q1, p2, q2);
 	}
 
-	public boolean testLineCollision(Coordinate p1, Coordinate q1,
+	public static boolean testLineCollision(Coordinate p1, Coordinate q1,
 			Coordinate p2, Coordinate q2) {
-		if (!this.testBoundingBoxCollision(p1, q1, p2, q2))
+		if (!testBoundingBoxCollision(p1, q1, p2, q2))
 			return false;
-		return this.testOrientationCollision(p1, q1, p2, q2);
+		return testOrientationCollision(p1, q1, p2, q2);
 	}
 
 }

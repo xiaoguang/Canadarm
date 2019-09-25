@@ -38,4 +38,6 @@ public final class GlobalCfg {
 	public static final Color grapplesColor = Color.RED;
 	public static final Color obstacleColor = Color.WHITE;
 
+	public static final double deltaRadian = 0.05235988;
+
 }
