@@ -6,8 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import comp.Board;
-import comp.GlobalPlanner;
-import comp.LocalPlanner;
+import comp.Planner;
 import comp.ProblemAndSolution;
 import comp.RobotState;
 import comp.RobotState.RobotStateOutPut;
@@ -16,8 +15,8 @@ public class Solver {
 
 	public static void main(String[] args) {
 		ProblemAndSolution probNSolt = new ProblemAndSolution();
-		LocalPlanner localPlanner = new LocalPlanner();
-		GlobalPlanner globalPlanner = new GlobalPlanner();
+		Planner planner = new Planner();
+
 		try {
 			Path p = Paths.get(args[0]);
 			String fileName = p.getFileName().toString();
@@ -36,8 +35,8 @@ public class Solver {
 			Board from = new Board(from_state);
 			Board to = new Board(to_state);
 
-			System.out.println(localPlanner.validate(from, to));
-			System.out.println(localPlanner.reachable(from, to));
+			System.out.println(planner.validate(from, to));
+			System.out.println(planner.reachable(from, to));
 
 			/*-
 			List<Board> steps = localPlanner.generateSteps(from, to);
@@ -49,7 +48,7 @@ public class Solver {
 			*/
 
 			for (int i = 0; i < 100; i++) {
-				Board s = globalPlanner.randomSampling(from);
+				Board s = planner.randomSampling(from);
 				RobotStateOutPut rso = new RobotState.RobotStateOutPut(s.state);
 				writer.write(rso.toString().concat(System.lineSeparator()));
 			}

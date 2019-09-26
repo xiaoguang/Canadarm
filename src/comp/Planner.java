@@ -5,10 +5,54 @@ import java.util.List;
 
 import utils.GlobalCfg;
 
-public class LocalPlanner {
+public class Planner {
 
-	public LocalPlanner() {
+	public static final GlobalPlanner gp = new GlobalPlanner();
+	public static final localPlanner lp = new localPlanner();
+
+	public Board randomSampling(Board board) {
+		return gp.randomSampling(board);
 	}
+
+	public boolean validate(Board from, Board to) {
+		return lp.validate(from, to);
+	}
+
+	public boolean reachable(Board from, Board to) {
+		return lp.reachable(from, to);
+	}
+
+	public List<Board> generateSteps(Board from, Board to) {
+		return lp.generateSteps(from, to);
+	}
+
+}
+
+class GlobalPlanner {
+
+	public Board randomSampling(Board board) {
+		boolean found = false;
+		Board sample = board.clone();
+		List<Segment> local = sample.state.segments;
+
+		while (!found) {
+			for (Segment seg : local) {
+				Angle ang = new AngleInRadian(
+						RoboticUtilFunctions.uniformAngleSampling());
+				seg.angle = ang;
+			}
+
+			sample.state.calcJoints();
+			if (!sample.collision())
+				found = true;
+		}
+
+		return sample;
+	}
+
+}
+
+class localPlanner {
 
 	public boolean validate(Board from, Board to) {
 		if (from.state.ee1Grappled != to.state.ee1Grappled

@@ -10,7 +10,7 @@ import comp.Board;
 import comp.BoundingBox;
 import comp.Coordinate;
 import comp.Line;
-import comp.LocalPlanner;
+import comp.Planner;
 import comp.ProblemAndSolution;
 import comp.RobotState;
 import comp.RoboticUtilFunctions;
@@ -87,7 +87,7 @@ public class SimpleUnitTest {
 	@Test
 	public void CollisionTest() throws Exception {
 		ProblemAndSolution probNSolt = new ProblemAndSolution();
-		LocalPlanner planner = new LocalPlanner();
+		Planner planner = new Planner();
 		probNSolt.readProblemFromInput("input/3g1_m0.txt");
 		RobotState from_state = Board.initRobotState.clone();
 		RobotState to_state = Board.goalRobotState.clone();
