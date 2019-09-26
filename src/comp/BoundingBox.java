@@ -8,7 +8,7 @@ public class BoundingBox {
 	Coordinate bl;
 	Coordinate tr;
 	List<Coordinate> corners;
-	List<Line> edges;
+	public List<Line> edges;
 
 	@SuppressWarnings("unused")
 	private BoundingBox() {
@@ -33,7 +33,7 @@ public class BoundingBox {
 		this.corners.add(new Coordinate(this.tr.X, this.bl.Y));
 
 		this.edges = new ArrayList<Line>();
-		for (int i = 0; i < this.corners.size() - 1; i++) {
+		for (int i = 0; i < this.corners.size(); i++) {
 			int e = (i + 1) % this.corners.size();
 			this.edges.add(new Line(this.corners.get(i), this.corners.get(e)));
 		}

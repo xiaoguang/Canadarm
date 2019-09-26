@@ -38,6 +38,11 @@ public final class GlobalCfg {
 	public static final Color grapplesColor = Color.RED;
 	public static final Color obstacleColor = Color.WHITE;
 
-	public static final double deltaRadian = 0.05235988;
+	public static final double deltaRadian = 0.0349065850399;
+	public static final double rrtAngleDistance = deltaRadian * 20;
+	public static final double angleLowerBound = (-11 * Math.PI / 12) - epsilon;
+	public static final double angleUpperBound = (11 * Math.PI / 12) + epsilon;
+	public static final double angleSampleRange = angleUpperBound
+			- angleLowerBound;
 
 }

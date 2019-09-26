@@ -50,6 +50,52 @@ public class RobotState {
 		return rs;
 	}
 
+	public boolean comparable(RobotState comp) {
+		if (this.ee1Grappled != comp.ee1Grappled
+				|| this.ee2Grappled != comp.ee2Grappled)
+			return false;
+
+		if (this.ee1Grappled && !this.ee1.equals(comp.ee1))
+			return false;
+
+		if (this.ee2Grappled && !this.ee2.equals(comp.ee2))
+			return false;
+
+		return true;
+	}
+
+	public double angleDistance(RobotState to) {
+		double dist = 0.0;
+
+		List<Segment> local;
+		List<Segment> comp;
+
+		if (this.ee1Grappled) {
+			local = this.ee1Segments;
+			comp = to.ee1Segments;
+		} else {
+			local = this.ee2Segments;
+			comp = to.ee2Segments;
+		}
+
+		for (int i = 0; i < local.size(); i++) {
+			Segment seg1 = local.get(i);
+			Segment seg2 = comp.get(i);
+			dist += Math.abs(
+					RoboticUtilFunctions.diffInRadian(seg1.angle, seg2.angle));
+		}
+
+		return dist;
+	}
+
+	public double lengthDistance(RobotState to) {
+		return 0.0;
+	}
+
+	public double distance(RobotState to) {
+		return this.angleDistance(to) + this.lengthDistance(to);
+	}
+
 	protected void calcJoints() {
 		this.joints.clear();
 
@@ -188,7 +234,7 @@ public class RobotState {
 			this.transform();
 		}
 
-		RobotStateOutPut(RobotState rs) {
+		public RobotStateOutPut(RobotState rs) {
 			if (rs.ee1Grappled) {
 				this.ee = rs.ee1;
 			} else {

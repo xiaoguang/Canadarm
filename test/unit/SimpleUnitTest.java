@@ -7,9 +7,13 @@ import org.junit.Test;
 import comp.Angle;
 import comp.AngleInDegree;
 import comp.Board;
+import comp.BoundingBox;
+import comp.Coordinate;
+import comp.Line;
 import comp.LocalPlanner;
 import comp.ProblemAndSolution;
 import comp.RobotState;
+import comp.RoboticUtilFunctions;
 import utils.GlobalCfg;
 
 public class SimpleUnitTest {
@@ -61,6 +65,23 @@ public class SimpleUnitTest {
 		Angle a = new AngleInDegree(179.0);
 		assertTrue(Math.abs(a.getDegree() - (179.0)) <= GlobalCfg.epsilon);
 		assertTrue(Math.abs(a.getRadian() - (3.12414)) <= GlobalCfg.epsilon);
+	}
+
+	@Test
+	public void AngleTest7() {
+		Coordinate bl = new Coordinate(0.3, 0.705);
+		Coordinate tr = new Coordinate(0.7, 1.0);
+		BoundingBox box = new BoundingBox(bl, tr);
+		Coordinate p = new Coordinate(0.3, 0.6);
+		Coordinate q = new Coordinate(0.4, 0.85);
+		assertTrue(RoboticUtilFunctions.testBoundingBoxCollision(bl, tr, p, q));
+
+		boolean result = true;
+		for (Line l : box.edges) {
+			result = result
+					&& !RoboticUtilFunctions.testLineCollision(p, q, l.p, l.q);
+		}
+		assertTrue(!result);
 	}
 
 	@Test

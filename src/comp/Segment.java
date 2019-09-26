@@ -1,5 +1,7 @@
 package comp;
 
+import utils.GlobalCfg;
+
 public class Segment implements Cloneable {
 
 	double min;
@@ -19,7 +21,14 @@ public class Segment implements Cloneable {
 	}
 
 	public boolean testLengthConstraint() {
-		return (this.len < this.max) && (this.min < this.len);
+		return (this.len <= this.max) && (this.min <= this.len);
+	}
+
+	public boolean testAngleConstraint() {
+		if (GlobalCfg.angleLowerBound < this.angle.radian
+				&& this.angle.radian < GlobalCfg.angleUpperBound)
+			return true;
+		return false;
 	}
 
 	@Override

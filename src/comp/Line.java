@@ -2,8 +2,8 @@ package comp;
 
 public class Line {
 
-	Coordinate p;
-	Coordinate q;
+	public Coordinate p;
+	public Coordinate q;
 
 	@SuppressWarnings("unused")
 	private Line() {

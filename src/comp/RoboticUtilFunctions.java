@@ -1,6 +1,36 @@
 package comp;
 
-public class CollisionCheck {
+import java.util.Random;
+
+import utils.GlobalCfg;
+
+public class RoboticUtilFunctions {
+
+	private static final Random random = new Random();
+
+	public static double uniformAngleSampling() {
+		return uniformAngleSamplingBetween(GlobalCfg.angleLowerBound,
+				GlobalCfg.angleUpperBound);
+	}
+
+	public static double uniformAngleSamplingBetween(double lower,
+			double upper) {
+		double width = upper - lower;
+		return lower + width * random.nextDouble();
+	}
+
+	private static double determinant(double px, double py, double qx,
+			double qy) {
+		return px * qy - py * qx;
+	}
+
+	private static double determinant(Coordinate p, Coordinate q) {
+		return determinant(p.X, p.Y, q.X, q.Y);
+	}
+
+	public static double diffInRadian(Angle from, Angle to) {
+		return to.radian - from.radian;
+	}
 
 	public static boolean testBoundingBoxCollision(Coordinate p1, Coordinate q1,
 			Coordinate p2, Coordinate q2) {
@@ -36,15 +66,6 @@ public class CollisionCheck {
 	public static boolean testBoundingBoxCollision(BoundingBox b1,
 			BoundingBox b2) {
 		return testBoundingBoxCollision(b1.bl, b1.tr, b2.bl, b2.tr);
-	}
-
-	public static double determinant(Coordinate p, Coordinate q) {
-		return determinant(p.X, p.Y, q.X, q.Y);
-	}
-
-	public static double determinant(double px, double py, double qx,
-			double qy) {
-		return px * qy - py * qx;
 	}
 
 	public static int triangleOrientation(Coordinate p, Coordinate q,
