@@ -8,7 +8,7 @@ public class Board {
 	public static RobotState initRobotState;
 	public static RobotState goalRobotState;
 
-	RobotState state;
+	public RobotState state;
 
 	public static final List<Coordinate> grapples = new ArrayList<Coordinate>();
 	public static final List<BoundingBox> obstacles = new ArrayList<BoundingBox>();
@@ -21,13 +21,27 @@ public class Board {
 		this.state = state;
 	}
 
-	public boolean testLengthConstraint() {
-		for (Segment seg : this.state.segments) {
-			if (!seg.testLengthConstraint()) {
-				return false;
-			}
+	public boolean violateLengthAndAngleConstraint() {
+		for (int i = 0; i < this.state.segments.size(); i++) {
+			Segment seg = this.state.segments.get(i);
+			if (!seg.testLengthConstraint())
+				return true;
+			if (i > 0 && !seg.testAngleConstraint())
+				return true;
 		}
-		return true;
+		return false;
+	}
+
+	public boolean environmentCollision() {
+		for (Coordinate j : this.state.joints) {
+			double x = j.X;
+			double y = j.Y;
+			if (x > 1.0 || x < 0.0)
+				return true;
+			if (y > 1.0 || y < 0.0)
+				return true;
+		}
+		return false;
 	}
 
 	public boolean selfCollision() {
@@ -41,7 +55,7 @@ public class Board {
 				Coordinate c3 = this.state.joints.get(j);
 				Coordinate c4 = this.state.joints.get(j + 1);
 
-				if (CollisionCheck.testLineCollision(c1, c2, c3, c4))
+				if (RoboticUtilFunctions.testLineCollision(c1, c2, c3, c4))
 					return true;
 			}
 		}
@@ -53,12 +67,13 @@ public class Board {
 			Coordinate c1 = this.state.joints.get(i);
 			Coordinate c2 = this.state.joints.get(i + 1);
 			for (BoundingBox b : obstacles) {
-				if (!CollisionCheck.testBoundingBoxCollision(c1, c2, b.bl,
+				if (!RoboticUtilFunctions.testBoundingBoxCollision(c1, c2, b.bl,
 						b.tr))
 					continue;
 
 				for (Line l : b.edges) {
-					if (CollisionCheck.testLineCollision(c1, c2, l.p, l.q))
+					if (RoboticUtilFunctions.testLineCollision(c1, c2, l.p,
+							l.q))
 						return true;
 				}
 			}
@@ -68,9 +83,10 @@ public class Board {
 
 	public boolean collision() {
 		boolean collide = false;
-		collide = collide || this.testLengthConstraint();
+		collide = collide || this.violateLengthAndAngleConstraint();
 		collide = collide || this.selfCollision();
 		collide = collide || this.obstacleCollision();
+		collide = collide || this.environmentCollision();
 		return collide;
 	}
 
@@ -100,6 +116,12 @@ public class Board {
 
 		Board b = (Board) object;
 		return this.equals(b);
+	}
+
+	@Override
+	public Board clone() {
+		RobotState cpy = this.state.clone();
+		return new Board(cpy);
 	}
 
 }
