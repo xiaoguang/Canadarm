@@ -32,14 +32,11 @@ public class Solver {
 			RobotState from_state = Board.initRobotState.clone();
 			RobotState to_state = Board.goalRobotState.clone();
 
-			Board from = new Board(from_state);
-			Board to = new Board(to_state);
-
-			System.out.println(planner.validate(from, to));
-			System.out.println(planner.reachable(from, to));
+			System.out.println(planner.validate(from_state, to_state));
+			System.out.println(planner.reachable(from_state, to_state));
 
 			/*-
-			List<Board> steps = localPlanner.generateSteps(from, to);
+			List<Board> steps = planner.generateSteps(from, to);
 			for (Board b : steps) {
 				RobotStateOutPut rso = new RobotState.RobotStateOutPut(b.state);
 				System.out.println(rso);
@@ -48,8 +45,8 @@ public class Solver {
 			*/
 
 			for (int i = 0; i < 100; i++) {
-				Board s = planner.randomSampling(from);
-				RobotStateOutPut rso = new RobotState.RobotStateOutPut(s.state);
+				RobotState s = planner.randomSampling(from_state);
+				RobotStateOutPut rso = new RobotState.RobotStateOutPut(s);
 				writer.write(rso.toString().concat(System.lineSeparator()));
 			}
 

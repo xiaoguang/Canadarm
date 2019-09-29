@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import utils.GlobalCfg;
+
 public class RobotState {
 
 	List<Segment> segments;
@@ -64,7 +66,7 @@ public class RobotState {
 		return true;
 	}
 
-	public double angleDistance(RobotState to) {
+	public double distance(RobotState to) {
 		double dist = 0.0;
 
 		List<Segment> local;
@@ -83,17 +85,10 @@ public class RobotState {
 			Segment seg2 = comp.get(i);
 			dist += Math.abs(
 					RoboticUtilFunctions.diffInRadian(seg1.angle, seg2.angle));
+			dist += Math.abs(seg1.len - seg2.len);
 		}
 
 		return dist;
-	}
-
-	public double lengthDistance(RobotState to) {
-		return 0.0;
-	}
-
-	public double distance(RobotState to) {
-		return this.angleDistance(to) + this.lengthDistance(to);
 	}
 
 	protected void calcJoints() {
@@ -147,6 +142,118 @@ public class RobotState {
 
 	public String write() {
 		return new RobotStateOutPut(this).toString();
+	}
+
+	public boolean violateLengthAndAngleConstraint() {
+		for (int i = 0; i < this.segments.size(); i++) {
+			Segment seg = this.segments.get(i);
+			if (!seg.testLengthConstraint())
+				return true;
+			if (i > 0 && !seg.testAngleConstraint())
+				return true;
+		}
+		return false;
+	}
+
+	public boolean environmentCollision() {
+		for (Coordinate j : this.joints) {
+			double x = j.X;
+			double y = j.Y;
+			if (x > 1.0 || x < 0.0)
+				return true;
+			if (y > 1.0 || y < 0.0)
+				return true;
+		}
+		return false;
+	}
+
+	public boolean selfCollision() {
+		if (this.segments.size() < 3)
+			return false;
+		for (int i = 0; i < this.joints.size() - 2; i++) {
+			Coordinate c1 = this.joints.get(i);
+			Coordinate c2 = this.joints.get(i + 1);
+
+			for (int j = i + 2; j < this.joints.size() - 1; j++) {
+				Coordinate c3 = this.joints.get(j);
+				Coordinate c4 = this.joints.get(j + 1);
+
+				if (RoboticUtilFunctions.testLineCollision(c1, c2, c3, c4))
+					return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean obstacleCollision() {
+		for (int i = 0; i < this.joints.size() - 1; i++) {
+			Coordinate c1 = this.joints.get(i);
+			Coordinate c2 = this.joints.get(i + 1);
+			for (BoundingBox b : Board.obstacles) {
+				if (!RoboticUtilFunctions.testBoundingBoxCollision(c1, c2, b.bl,
+						b.tr))
+					continue;
+
+				for (Line l : b.edges) {
+					if (RoboticUtilFunctions.testLineCollision(c1, c2, l.p,
+							l.q))
+						return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public boolean collision() {
+		boolean collide = false;
+		collide = collide || this.violateLengthAndAngleConstraint();
+		collide = collide || this.selfCollision();
+		collide = collide || this.obstacleCollision();
+		collide = collide || this.environmentCollision();
+		return collide;
+	}
+
+	boolean findSampleWithin(RobotState state) {
+		if (!this.comparable(state))
+			return false;
+
+		double dist = 0.0;
+		for (int i = 0; i < this.segments.size(); i++) {
+			Segment from = this.segments.get(i);
+			Segment to = state.segments.get(i);
+			to.angle.radian = RoboticUtilFunctions.uniformAngleSamplingBetween(
+					from.angle.radian, to.angle.radian);
+			to.angle.normalize();
+			dist += RoboticUtilFunctions.diffInRadian(from.angle, to.angle);
+		}
+		state.calcJoints();
+
+		// return null, if sampled step is too small
+		if (dist < GlobalCfg.rrtMinRadianDistance * state.segments.size()) {
+			return false;
+		}
+
+		// re-sample in between from and to
+		if (dist > GlobalCfg.rrtMaxRadianDistance * state.segments.size()) {
+			return this.findSampleWithin(state);
+		}
+
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 0;
+
+		for (Coordinate j : this.joints) {
+			if (this.ee1Grappled)
+				hash += GlobalCfg.prime2;
+			else
+				hash += GlobalCfg.prime3;
+			hash += j.hashCode();
+		}
+
+		return hash;
 	}
 
 	@Override

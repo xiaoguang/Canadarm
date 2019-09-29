@@ -10,7 +10,6 @@ public final class GlobalCfg {
 	public static final int prime4 = 31;
 	public static final int prime5 = 89;
 
-	public static final double delta = 1e-3;
 	public static final double epsilon = 1e-6;
 	public static final double gpRadius = 0.013;
 
@@ -39,7 +38,9 @@ public final class GlobalCfg {
 	public static final Color obstacleColor = Color.WHITE;
 
 	public static final double deltaRadian = 0.0349065850399;
-	public static final double rrtAngleDistance = deltaRadian * 20;
+	public static final double lengthRadian = 0.0349065850399;
+	public static final double rrtMaxRadianDistance = deltaRadian * 4;
+	public static final double rrtMinRadianDistance = deltaRadian;
 	public static final double angleLowerBound = (-11 * Math.PI / 12) - epsilon;
 	public static final double angleUpperBound = (11 * Math.PI / 12) + epsilon;
 	public static final double angleSampleRange = angleUpperBound

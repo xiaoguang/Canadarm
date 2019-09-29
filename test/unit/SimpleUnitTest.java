@@ -86,14 +86,13 @@ public class SimpleUnitTest {
 
 	@Test
 	public void CollisionTest() throws Exception {
-		ProblemAndSolution probNSolt = new ProblemAndSolution();
 		Planner planner = new Planner();
+		ProblemAndSolution probNSolt = new ProblemAndSolution();
 		probNSolt.readProblemFromInput("input/3g1_m0.txt");
 		RobotState from_state = Board.initRobotState.clone();
 		RobotState to_state = Board.goalRobotState.clone();
-		Board from = new Board(from_state);
-		Board to = new Board(to_state);
-		assertTrue(planner.validate(from, to));
-		assertTrue(planner.reachable(from, to));
+		assertTrue(planner.validate(from_state, to_state));
+		assertTrue(planner.reachable(from_state, to_state));
 	}
+
 }
