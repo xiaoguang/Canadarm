@@ -5,19 +5,19 @@ import java.util.Set;
 
 import utils.GlobalCfg;
 
-public class RapidExploringRandomTree {
+public class RRT {
 
-	RRTNode root;
-	public Set<RRTNode> sampled;
+	Node root;
+	Set<Node> sampled;
 	Planner planner;
 
 	@SuppressWarnings("unused")
-	private RapidExploringRandomTree() {
+	private RRT() {
 	}
 
-	public RapidExploringRandomTree(RRTNode root) {
+	public RRT(Node root) {
 		this.root = root;
-		this.sampled = new HashSet<RRTNode>();
+		this.sampled = new HashSet<Node>();
 		this.sampled.add(this.root);
 		this.planner = new Planner();
 	}
@@ -26,15 +26,15 @@ public class RapidExploringRandomTree {
 		return this.sampled.size();
 	}
 
-	public RRTNode addNode(RRTNode node) {
+	public Node addNode(Node node) {
 		// return false, if already explored
 		if (this.sampled.contains(node))
 			return null;
 
 		// find min node in the tree
 		double min = Double.MAX_VALUE;
-		RRTNode minNode = null;
-		for (RRTNode s : this.sampled) {
+		Node minNode = null;
+		for (Node s : this.sampled) {
 			double local = s.rs.distance(node.rs);
 			if (local < min) {
 				min = local;
@@ -61,6 +61,36 @@ public class RapidExploringRandomTree {
 		this.sampled.add(node);
 
 		return node;
+	}
+
+}
+
+class Node {
+
+	Node parent;
+	RobotState rs;
+	Set<Node> children;
+
+	@SuppressWarnings("unused")
+	private Node() {
+	}
+
+	public Node(RobotState rs) {
+		this.parent = null;
+		this.rs = rs;
+		this.children = new HashSet<Node>();
+	}
+
+	public boolean addChildren(Node child) {
+		if (!this.children.add(child))
+			return false;
+		child.parent = this;
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		return rs.hashCode();
 	}
 
 }

@@ -20,4 +20,5 @@ public class Line {
 		str = str.concat("P : " + this.p + "  " + "Q : " + this.q);
 		return str;
 	}
+
 }
