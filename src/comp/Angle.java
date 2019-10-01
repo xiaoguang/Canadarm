@@ -93,3 +93,21 @@ public class Angle {
 	}
 
 }
+
+class AngleInDegree extends Angle {
+
+	public AngleInDegree(double degree) {
+		super.radian = degree * Math.PI / 180;
+		super.normalize();
+	}
+
+}
+
+class AngleInRadian extends Angle {
+
+	public AngleInRadian(double radian) {
+		super.radian = radian;
+		super.normalize();
+	}
+
+}
