@@ -45,4 +45,6 @@ public final class GlobalCfg {
 	public static final double angleSampleRange = angleUpperBound
 			- angleLowerBound;
 
+	public static final int maxNumberOfSamples = 100000;
+
 }

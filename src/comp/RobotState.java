@@ -53,6 +53,7 @@ public class RobotState {
 	}
 
 	public boolean comparable(RobotState comp) {
+		// return false if not same grapple point
 		if (this.ee1Grappled != comp.ee1Grappled
 				|| this.ee2Grappled != comp.ee2Grappled)
 			return false;
@@ -213,7 +214,9 @@ public class RobotState {
 		return collide;
 	}
 
+	// sample in between this and state
 	boolean findSampleWithin(RobotState state) {
+		// return false if not comparable
 		if (!this.comparable(state))
 			return false;
 
@@ -228,12 +231,12 @@ public class RobotState {
 		}
 		state.calcJoints();
 
-		// return null, if sampled step is too small
+		// return false, if sampled step is too small
 		if (dist < GlobalCfg.epsilon * state.segments.size()) {
 			return false;
 		}
 
-		// re-sample in between from and to
+		// re-sample if needed
 		if (dist > GlobalCfg.rrtMaxRadianDistance * state.segments.size()) {
 			return this.findSampleWithin(state);
 		}

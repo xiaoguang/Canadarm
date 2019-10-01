@@ -26,41 +26,38 @@ public class RRT {
 		return this.sampled.size();
 	}
 
-	public Node addNode(Node node) {
+	public Node addNode(RobotState state) {
 		// return false, if already explored
-		if (this.sampled.contains(node))
+		if (this.sampled.contains(new Node(state)))
 			return null;
 
 		// find min node in the tree
 		double min = Double.MAX_VALUE;
 		Node minNode = null;
-		for (Node s : this.sampled) {
-			double local = s.rs.distance(node.rs);
+		for (Node node : this.sampled) {
+			double local = node.rs.distance(state);
 			if (local < min) {
 				min = local;
-				minNode = s;
+				minNode = node;
 			}
 		}
 
-		if (minNode == null)
+		// step is too small
+		if (min < GlobalCfg.epsilon * minNode.rs.segments.size())
 			return null;
 
-		if (min < GlobalCfg.epsilon * node.rs.segments.size())
-			return null;
-
-		if (min > GlobalCfg.rrtMaxRadianDistance * node.rs.segments.size()) {
-			if (!minNode.rs.findSampleWithin(node.rs))
+		if (min > GlobalCfg.rrtMaxRadianDistance * minNode.rs.segments.size()) {
+			if (!minNode.rs.findSampleWithin(state))
 				return null;
 		}
 
-		if (planner.generateSteps(minNode.rs, node.rs) == null)
+		if (planner.generateSteps(minNode.rs, state) == null)
 			return null;
 
-		if (!minNode.addChildren(node))
-			System.exit(-1);
-		this.sampled.add(node);
+		Node newNode = minNode.addChildren(state);
+		this.sampled.add(newNode);
 
-		return node;
+		return newNode;
 	}
 
 }
@@ -69,7 +66,6 @@ class Node {
 
 	Node parent;
 	RobotState rs;
-	Set<Node> children;
 
 	@SuppressWarnings("unused")
 	private Node() {
@@ -78,19 +74,32 @@ class Node {
 	public Node(RobotState rs) {
 		this.parent = null;
 		this.rs = rs;
-		this.children = new HashSet<Node>();
 	}
 
-	public boolean addChildren(Node child) {
-		if (!this.children.add(child))
-			return false;
-		child.parent = this;
-		return true;
+	public Node addChildren(RobotState child) {
+		Node node = new Node(child);
+		node.parent = this;
+		return node;
 	}
 
 	@Override
 	public int hashCode() {
 		return rs.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object == null)
+			return false;
+		if (object == this)
+			return true;
+		if (this.getClass() != object.getClass())
+			return false;
+		Node n = (Node) object;
+		if (!this.rs.equals(n.rs))
+			return false;
+
+		return true;
 	}
 
 }
