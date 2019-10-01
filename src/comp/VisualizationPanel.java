@@ -158,8 +158,6 @@ public class VisualizationPanel extends JComponent {
 	}
 
 	public void calculateTransform() {
-		// System.out.println(getWidth());
-		// System.out.println(getHeight());
 		transform = AffineTransform.getScaleInstance(getWidth(), -getHeight());
 		transform.concatenate(translation);
 	}

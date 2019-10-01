@@ -4,10 +4,13 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import comp.Board;
 import comp.Planner;
 import comp.ProblemAndSolution;
+import comp.RRTNode;
+import comp.RapidExploringRandomTree;
 import comp.RobotState;
 import comp.RobotState.RobotStateOutPut;
 
@@ -44,10 +47,42 @@ public class Solver {
 			}
 			*/
 
-			for (int i = 0; i < 100; i++) {
+			RapidExploringRandomTree rrt = new RapidExploringRandomTree(
+					new RRTNode(Board.initRobotState));
+
+			while (rrt.size() < 10000) {
 				RobotState s = planner.randomSampling(from_state);
-				RobotStateOutPut rso = new RobotState.RobotStateOutPut(s);
+				rrt.addNode(new RRTNode(s));
+				// RobotStateOutPut rso = new RobotState.RobotStateOutPut(s);
+				// writer.write(rso.toString().concat(System.lineSeparator()));
+			}
+
+			double dist = Double.MAX_VALUE;
+			RRTNode minDistNode = null;
+			for (RRTNode node : rrt.sampled) {
+				double localDist = node.rs.distance(Board.goalRobotState);
+				List<RobotState> moves = planner
+						.generateSteps(Board.goalRobotState, node.rs);
+				if (moves != null && localDist < dist) {
+					dist = localDist;
+					minDistNode = node;
+				}
+			}
+
+			RRTNode goal = new RRTNode(Board.goalRobotState);
+			if (minDistNode != null) {
+				List<RobotState> moves = planner.generateSteps(minDistNode.rs,
+						Board.goalRobotState);
+				if (moves != null) {
+					minDistNode.addChildren(goal);
+				}
+			}
+
+			RRTNode curr = goal;
+			while (curr != null) {
+				RobotStateOutPut rso = new RobotState.RobotStateOutPut(curr.rs);
 				writer.write(rso.toString().concat(System.lineSeparator()));
+				curr = curr.parent;
 			}
 
 			writer.close();

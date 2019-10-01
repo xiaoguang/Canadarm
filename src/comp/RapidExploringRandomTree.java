@@ -8,7 +8,8 @@ import utils.GlobalCfg;
 public class RapidExploringRandomTree {
 
 	RRTNode root;
-	Set<RRTNode> sampled;
+	public Set<RRTNode> sampled;
+	Planner planner;
 
 	@SuppressWarnings("unused")
 	private RapidExploringRandomTree() {
@@ -18,16 +19,17 @@ public class RapidExploringRandomTree {
 		this.root = root;
 		this.sampled = new HashSet<RRTNode>();
 		this.sampled.add(this.root);
+		this.planner = new Planner();
 	}
 
 	public int size() {
 		return this.sampled.size();
 	}
 
-	public boolean addNode(RRTNode node) {
+	public RRTNode addNode(RRTNode node) {
 		// return false, if already explored
 		if (this.sampled.contains(node))
-			return false;
+			return null;
 
 		// find min node in the tree
 		double min = Double.MAX_VALUE;
@@ -41,21 +43,24 @@ public class RapidExploringRandomTree {
 		}
 
 		if (minNode == null)
-			return false;
+			return null;
 
-		if (min < GlobalCfg.rrtMinRadianDistance * node.rs.segments.size())
-			return false;
+		if (min < GlobalCfg.epsilon * node.rs.segments.size())
+			return null;
 
 		if (min > GlobalCfg.rrtMaxRadianDistance * node.rs.segments.size()) {
 			if (!minNode.rs.findSampleWithin(node.rs))
-				return false;
+				return null;
 		}
+
+		if (planner.generateSteps(minNode.rs, node.rs) == null)
+			return null;
 
 		if (!minNode.addChildren(node))
 			System.exit(-1);
 		this.sampled.add(node);
 
-		return true;
+		return node;
 	}
 
 }

@@ -229,7 +229,7 @@ public class RobotState {
 		state.calcJoints();
 
 		// return null, if sampled step is too small
-		if (dist < GlobalCfg.rrtMinRadianDistance * state.segments.size()) {
+		if (dist < GlobalCfg.epsilon * state.segments.size()) {
 			return false;
 		}
 

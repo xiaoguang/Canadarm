@@ -5,8 +5,8 @@ import java.util.Set;
 
 public class RRTNode {
 
-	RRTNode parent;
-	RobotState rs;
+	public RRTNode parent;
+	public RobotState rs;
 	Set<RRTNode> children;
 
 	@SuppressWarnings("unused")
