@@ -4,34 +4,35 @@ import java.util.Random;
 
 import utils.GlbCfg;
 
-public class RoboticUtils {
+public class RobotUtils {
 
 	private static final Random random = new Random();
 
-	public static double uniformAngleSampling() {
+	public static synchronized double uniformAngleSampling() {
 		return uniformSample(GlbCfg.angleLowerBound, GlbCfg.angleUpperBound);
 	}
 
-	public static double uniformSample(double lower, double upper) {
+	public static synchronized double uniformSample(double lower,
+			double upper) {
 		double width = upper - lower;
 		return lower + width * random.nextDouble();
 	}
 
-	private static double determinant(double px, double py, double qx,
-			double qy) {
+	private static synchronized double determinant(double px, double py,
+			double qx, double qy) {
 		return px * qy - py * qx;
 	}
 
-	private static double determinant(Coordinate p, Coordinate q) {
+	private static synchronized double determinant(Coordinate p, Coordinate q) {
 		return determinant(p.X, p.Y, q.X, q.Y);
 	}
 
-	public static double diffInRadian(Angle from, Angle to) {
+	public static synchronized double diffInRadian(Angle from, Angle to) {
 		return to.radian - from.radian;
 	}
 
-	public static boolean testBoundingBoxCollision(Coordinate p1, Coordinate q1,
-			Coordinate p2, Coordinate q2) {
+	public static synchronized boolean testBoundingBoxCollision(Coordinate p1,
+			Coordinate q1, Coordinate p2, Coordinate q2) {
 		double p1x = p1.X;
 		double p1y = p1.Y;
 		double q1x = q1.X;
@@ -61,13 +62,13 @@ public class RoboticUtils {
 		return true;
 	}
 
-	public static boolean testBoundingBoxCollision(BoundingBox b1,
+	public static synchronized boolean testBoundingBoxCollision(BoundingBox b1,
 			BoundingBox b2) {
 		return testBoundingBoxCollision(b1.bl, b1.tr, b2.bl, b2.tr);
 	}
 
-	public static int triangleOrientation(Coordinate p, Coordinate q,
-			Coordinate r) {
+	public static synchronized int triangleOrientation(Coordinate p,
+			Coordinate q, Coordinate r) {
 		double area = determinant(p, q) + determinant(q, r) - determinant(p, r);
 		if (area > 0)
 			return 1;
@@ -76,8 +77,8 @@ public class RoboticUtils {
 		return 0;
 	}
 
-	public static boolean testOrientationCollision(Coordinate p1, Coordinate q1,
-			Coordinate p2, Coordinate q2) {
+	public static synchronized boolean testOrientationCollision(Coordinate p1,
+			Coordinate q1, Coordinate p2, Coordinate q2) {
 		if (triangleOrientation(p1, q1, p2) == triangleOrientation(p1, q1, q2))
 			return false;
 		if (triangleOrientation(p2, q2, p1) == triangleOrientation(p2, q2, q1))
@@ -85,7 +86,7 @@ public class RoboticUtils {
 		return true;
 	}
 
-	public static boolean testLineCollision(Line l1, Line l2) {
+	public static synchronized boolean testLineCollision(Line l1, Line l2) {
 		Coordinate p1 = l1.p;
 		Coordinate q1 = l1.q;
 		Coordinate p2 = l2.p;
@@ -93,8 +94,8 @@ public class RoboticUtils {
 		return testLineCollision(p1, q1, p2, q2);
 	}
 
-	public static boolean testLineCollision(Coordinate p1, Coordinate q1,
-			Coordinate p2, Coordinate q2) {
+	public static synchronized boolean testLineCollision(Coordinate p1,
+			Coordinate q1, Coordinate p2, Coordinate q2) {
 		if (!testBoundingBoxCollision(p1, q1, p2, q2))
 			return false;
 		return testOrientationCollision(p1, q1, p2, q2);

@@ -84,7 +84,7 @@ public class RobotState {
 		for (int i = 0; i < local.size(); i++) {
 			Segment seg1 = local.get(i);
 			Segment seg2 = comp.get(i);
-			dist += Math.abs(RoboticUtils.diffInRadian(seg1.angle, seg2.angle));
+			dist += Math.abs(RobotUtils.diffInRadian(seg1.angle, seg2.angle));
 			dist += Math.abs(seg1.len - seg2.len);
 		}
 
@@ -178,7 +178,7 @@ public class RobotState {
 				Coordinate c3 = this.joints.get(j);
 				Coordinate c4 = this.joints.get(j + 1);
 
-				if (RoboticUtils.testLineCollision(c1, c2, c3, c4))
+				if (RobotUtils.testLineCollision(c1, c2, c3, c4))
 					return true;
 			}
 		}
@@ -190,11 +190,11 @@ public class RobotState {
 			Coordinate c1 = this.joints.get(i);
 			Coordinate c2 = this.joints.get(i + 1);
 			for (BoundingBox b : Board.obstacles) {
-				if (!RoboticUtils.testBoundingBoxCollision(c1, c2, b.bl, b.tr))
+				if (!RobotUtils.testBoundingBoxCollision(c1, c2, b.bl, b.tr))
 					continue;
 
 				for (Line l : b.edges) {
-					if (RoboticUtils.testLineCollision(c1, c2, l.p, l.q))
+					if (RobotUtils.testLineCollision(c1, c2, l.p, l.q))
 						return true;
 				}
 			}
@@ -221,10 +221,12 @@ public class RobotState {
 		for (int i = 0; i < this.segments.size(); i++) {
 			Segment from = this.segments.get(i);
 			Segment to = state.segments.get(i);
-			to.angle.radian = RoboticUtils.uniformSample(from.angle.radian,
+			to.angle.radian = RobotUtils.uniformSample(from.angle.radian,
 					to.angle.radian);
 			to.angle.normalize();
-			dist += RoboticUtils.diffInRadian(from.angle, to.angle);
+			dist += RobotUtils.diffInRadian(from.angle, to.angle);
+			to.len = RobotUtils.uniformSample(from.len, to.len);
+			dist += Math.abs(from.len - to.len);
 		}
 		state.calcJoints();
 
@@ -234,7 +236,8 @@ public class RobotState {
 		}
 
 		// re-sample if needed
-		if (dist > GlbCfg.rrtMaxRadianDistance * state.segments.size()) {
+		if (dist > (GlbCfg.rrtMaxRadianDistance + GlbCfg.rrtMaxLengthDistance)
+				* state.segments.size()) {
 			return this.findSampleWithin(state);
 		}
 

@@ -7,28 +7,8 @@ import utils.GlbCfg;
 
 public class Planner {
 
-	public static final GlobalPlanner gp = new GlobalPlanner();
-	public static final localPlanner lp = new localPlanner();
-
-	public RobotState randomSampling(RobotState state) {
-		return gp.randomSampling(state);
+	public Planner() {
 	}
-
-	public boolean validate(RobotState from, RobotState to) {
-		return lp.validate(from, to);
-	}
-
-	public boolean reachable(RobotState from, RobotState to) {
-		return lp.reachable(from, to);
-	}
-
-	public List<RobotState> generateSteps(RobotState from, RobotState to) {
-		return lp.generateSteps(from, to);
-	}
-
-}
-
-class GlobalPlanner {
 
 	public RobotState randomSampling(RobotState state) {
 		boolean found = false;
@@ -37,9 +17,12 @@ class GlobalPlanner {
 
 		while (!found) {
 			for (Segment seg : local) {
-				double r = RoboticUtils.uniformAngleSampling();
+				double r = RobotUtils.uniformAngleSampling();
 				seg.angle.radian = r;
 				seg.angle.normalize();
+
+				double l = RobotUtils.uniformSample(seg.min, seg.max);
+				seg.len = l;
 			}
 
 			sample.calcJoints();
@@ -49,10 +32,6 @@ class GlobalPlanner {
 
 		return sample;
 	}
-
-}
-
-class localPlanner {
 
 	public boolean validate(RobotState from, RobotState to) {
 		if (from.ee1Grappled != to.ee1Grappled
@@ -69,12 +48,12 @@ class localPlanner {
 			Coordinate localTo = to.joints.get(i);
 
 			for (BoundingBox b : Board.obstacles) {
-				if (!RoboticUtils.testBoundingBoxCollision(localFrom, localTo,
+				if (!RobotUtils.testBoundingBoxCollision(localFrom, localTo,
 						b.bl, b.tr))
 					continue;
 
 				for (Line l : b.edges) {
-					if (RoboticUtils.testLineCollision(localFrom, localTo, l.p,
+					if (RobotUtils.testLineCollision(localFrom, localTo, l.p,
 							l.q))
 						return false;
 				}
@@ -98,40 +77,80 @@ class localPlanner {
 			Segment sf = rsFrom.segments.get(i);
 			Segment st = rsTo.segments.get(i);
 
-			double diff = RoboticUtils.diffInRadian(sf.angle, st.angle);
+			double angleDiff = RobotUtils.diffInRadian(sf.angle, st.angle);
+			double lengthDiff = sf.len - st.len;
 
-			if (diff > 0) {
-				while (diff > GlbCfg.deltaRadian) {
-					diff -= GlbCfg.deltaRadian;
-					sf.angle.addInRadian(GlbCfg.deltaRadian);
-					rsFrom.calcJoints();
+			// length shifts
+			{
+				if (lengthDiff > 0) {
+					while (lengthDiff > GlbCfg.deltaLength) {
+						lengthDiff -= GlbCfg.deltaLength;
+						sf.len -= GlbCfg.deltaLength;
+						rsFrom.calcJoints();
 
-					RobotState lrs = rsFrom.clone();
-					if (lrs.collision())
-						return null;
-					changes.add(lrs);
+						RobotState lrs = rsFrom.clone();
+						if (lrs.collision())
+							return null;
+						changes.add(lrs);
+					}
+				} else {
+					while (Math.abs(lengthDiff) > GlbCfg.deltaLength) {
+						lengthDiff += GlbCfg.deltaLength;
+						sf.len += GlbCfg.deltaLength;
+						rsFrom.calcJoints();
+
+						RobotState lrs = rsFrom.clone();
+						if (lrs.collision())
+							return null;
+						changes.add(lrs);
+					}
 				}
-			} else {
-				while (Math.abs(diff) > GlbCfg.deltaRadian) {
-					diff += GlbCfg.deltaRadian;
-					sf.angle.minusInRadian(GlbCfg.deltaRadian);
-					rsFrom.calcJoints();
 
-					RobotState lrs = rsFrom.clone();
-					if (lrs.collision())
-						return null;
-					changes.add(lrs);
-				}
+				if (Math.abs(lengthDiff) < GlbCfg.epsilon)
+					continue;
+
+				sf.len += lengthDiff;
+				RobotState lrs = rsFrom.clone();
+				if (lrs.collision())
+					return null;
+				changes.add(lrs);
 			}
 
-			if (Math.abs(diff) < GlbCfg.epsilon)
-				continue;
+			// angle shifts
+			{
+				if (angleDiff > 0) {
+					while (angleDiff > GlbCfg.deltaRadian) {
+						angleDiff -= GlbCfg.deltaRadian;
+						sf.angle.addInRadian(GlbCfg.deltaRadian);
+						rsFrom.calcJoints();
 
-			sf.angle.addInRadian(diff);
-			RobotState lrs = rsFrom.clone();
-			if (lrs.collision())
-				return null;
-			changes.add(lrs);
+						RobotState lrs = rsFrom.clone();
+						if (lrs.collision())
+							return null;
+						changes.add(lrs);
+					}
+				} else {
+					while (Math.abs(angleDiff) > GlbCfg.deltaRadian) {
+						angleDiff += GlbCfg.deltaRadian;
+						sf.angle.minusInRadian(GlbCfg.deltaRadian);
+						rsFrom.calcJoints();
+
+						RobotState lrs = rsFrom.clone();
+						if (lrs.collision())
+							return null;
+						changes.add(lrs);
+					}
+				}
+
+				if (Math.abs(angleDiff) < GlbCfg.epsilon)
+					continue;
+
+				sf.angle.addInRadian(angleDiff);
+				RobotState lrs = rsFrom.clone();
+				if (lrs.collision())
+					return null;
+				changes.add(lrs);
+			}
 		}
 
 		return changes;
