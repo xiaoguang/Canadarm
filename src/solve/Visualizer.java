@@ -38,7 +38,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import comp.VisualizationPanel;
-import utils.GlobalCfg;
+import utils.GlbCfg;
 
 public class Visualizer {
 
@@ -113,7 +113,7 @@ public class Visualizer {
 				visualizer.loadSolution(new File(args[1]));
 			}
 		}
-		frame.setSize(GlobalCfg.frameSizeX, GlobalCfg.frameSizeY);
+		frame.setSize(GlbCfg.frameSizeX, GlbCfg.frameSizeY);
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				System.exit(0);
@@ -138,12 +138,11 @@ public class Visualizer {
 	private void createComponents() {
 		this.wasPlaying = false;
 		this.visualPanel = new VisualizationPanel(this, this.bgImage);
-		this.visualPanel.setSize(new Dimension(GlobalCfg.displayPanelSize,
-				GlobalCfg.displayPanelSize));
+		this.visualPanel.setSize(new Dimension(GlbCfg.displayPanelSize,
+				GlbCfg.displayPanelSize));
 		JPanel displayPanel = new JPanel(new BorderLayout());
 		displayPanel.add(this.visualPanel, BorderLayout.CENTER);
-		displayPanel.setSize(GlobalCfg.displayPanelSize,
-				GlobalCfg.displayPanelSize);
+		displayPanel.setSize(GlbCfg.displayPanelSize, GlbCfg.displayPanelSize);
 		this.container.setLayout(new BorderLayout());
 		displayPanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createEmptyBorder(4, 4, 4, 4),
@@ -156,25 +155,25 @@ public class Visualizer {
 	private void createMenu() {
 		this.menuBar = new JMenuBar();
 
-		fileMenu = new JMenu(GlobalCfg.file);
+		fileMenu = new JMenu(GlbCfg.file);
 		fileMenu.setMnemonic(KeyEvent.VK_F);
 		fileMenu.getAccessibleContext()
 				.setAccessibleDescription("Load configs or close the app.");
 		menuBar.add(fileMenu);
 
-		loadProblemItem = new JMenuItem(GlobalCfg.loadProblem);
+		loadProblemItem = new JMenuItem(GlbCfg.loadProblem);
 		loadProblemItem.setMnemonic(KeyEvent.VK_P);
 		loadProblemItem.addActionListener(menuListener);
 		fileMenu.add(loadProblemItem);
 
-		loadSolutionItem = new JMenuItem(GlobalCfg.loadSolution);
+		loadSolutionItem = new JMenuItem(GlbCfg.loadSolution);
 		loadSolutionItem.setMnemonic(KeyEvent.VK_S);
 		loadSolutionItem.addActionListener(menuListener);
 		loadSolutionItem.setEnabled(false);
 		fileMenu.add(loadSolutionItem);
 
 		fileMenu.addSeparator();
-		exitItem = new JMenuItem(GlobalCfg.exit);
+		exitItem = new JMenuItem(GlbCfg.exit);
 		exitItem.setMnemonic(KeyEvent.VK_X);
 		exitItem.addActionListener(menuListener);
 		fileMenu.add(exitItem);
@@ -191,8 +190,8 @@ public class Visualizer {
 		animationControls = new JPanel();
 		animationControls.setLayout(
 				new BoxLayout(animationControls, BoxLayout.PAGE_AXIS));
-		animationControls.setSize(new Dimension(GlobalCfg.controlPanelSizeX,
-				GlobalCfg.controlPanelSizeY));
+		animationControls.setSize(new Dimension(GlbCfg.controlPanelSizeX,
+				GlbCfg.controlPanelSizeY));
 		animationControls.add(new JSeparator(JSeparator.HORIZONTAL));
 
 		JLabel manualLabel = new JLabel("Position");
@@ -219,9 +218,8 @@ public class Visualizer {
 		framerateLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		framerateLabel.setFont(lableFont);
 
-		framerateSlider = new JSlider(JSlider.HORIZONTAL,
-				GlobalCfg.frameRateMin, GlobalCfg.frameRateMax,
-				GlobalCfg.frameRateInit);
+		framerateSlider = new JSlider(JSlider.HORIZONTAL, GlbCfg.frameRateMin,
+				GlbCfg.frameRateMax, GlbCfg.frameRateInit);
 		framerateSlider.setPaintTicks(true);
 		framerateSlider.setPaintLabels(true);
 		framerateSlider

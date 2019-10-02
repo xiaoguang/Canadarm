@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import utils.GlobalCfg;
+import utils.GlbCfg;
 
 public class RobotState {
 
@@ -84,8 +84,7 @@ public class RobotState {
 		for (int i = 0; i < local.size(); i++) {
 			Segment seg1 = local.get(i);
 			Segment seg2 = comp.get(i);
-			dist += Math.abs(
-					RoboticUtilFunctions.diffInRadian(seg1.angle, seg2.angle));
+			dist += Math.abs(RoboticUtils.diffInRadian(seg1.angle, seg2.angle));
 			dist += Math.abs(seg1.len - seg2.len);
 		}
 
@@ -179,7 +178,7 @@ public class RobotState {
 				Coordinate c3 = this.joints.get(j);
 				Coordinate c4 = this.joints.get(j + 1);
 
-				if (RoboticUtilFunctions.testLineCollision(c1, c2, c3, c4))
+				if (RoboticUtils.testLineCollision(c1, c2, c3, c4))
 					return true;
 			}
 		}
@@ -191,13 +190,11 @@ public class RobotState {
 			Coordinate c1 = this.joints.get(i);
 			Coordinate c2 = this.joints.get(i + 1);
 			for (BoundingBox b : Board.obstacles) {
-				if (!RoboticUtilFunctions.testBoundingBoxCollision(c1, c2, b.bl,
-						b.tr))
+				if (!RoboticUtils.testBoundingBoxCollision(c1, c2, b.bl, b.tr))
 					continue;
 
 				for (Line l : b.edges) {
-					if (RoboticUtilFunctions.testLineCollision(c1, c2, l.p,
-							l.q))
+					if (RoboticUtils.testLineCollision(c1, c2, l.p, l.q))
 						return true;
 				}
 			}
@@ -224,20 +221,20 @@ public class RobotState {
 		for (int i = 0; i < this.segments.size(); i++) {
 			Segment from = this.segments.get(i);
 			Segment to = state.segments.get(i);
-			to.angle.radian = RoboticUtilFunctions.uniformAngleSamplingBetween(
-					from.angle.radian, to.angle.radian);
+			to.angle.radian = RoboticUtils.uniformSample(from.angle.radian,
+					to.angle.radian);
 			to.angle.normalize();
-			dist += RoboticUtilFunctions.diffInRadian(from.angle, to.angle);
+			dist += RoboticUtils.diffInRadian(from.angle, to.angle);
 		}
 		state.calcJoints();
 
 		// return false, if sampled step is too small
-		if (dist < GlobalCfg.epsilon * state.segments.size()) {
+		if (dist < GlbCfg.epsilon * state.segments.size()) {
 			return false;
 		}
 
 		// re-sample if needed
-		if (dist > GlobalCfg.rrtMaxRadianDistance * state.segments.size()) {
+		if (dist > GlbCfg.rrtMaxRadianDistance * state.segments.size()) {
 			return this.findSampleWithin(state);
 		}
 
@@ -250,9 +247,9 @@ public class RobotState {
 
 		for (Coordinate j : this.joints) {
 			if (this.ee1Grappled)
-				hash += GlobalCfg.prime2;
+				hash += GlbCfg.prime2;
 			else
-				hash += GlobalCfg.prime3;
+				hash += GlbCfg.prime3;
 			hash += j.hashCode();
 		}
 
@@ -432,8 +429,8 @@ class Segment implements Cloneable {
 	}
 
 	public boolean testAngleConstraint() {
-		if (GlobalCfg.angleLowerBound < this.angle.radian
-				&& this.angle.radian < GlobalCfg.angleUpperBound)
+		if (GlbCfg.angleLowerBound < this.angle.radian
+				&& this.angle.radian < GlbCfg.angleUpperBound)
 			return true;
 		return false;
 	}

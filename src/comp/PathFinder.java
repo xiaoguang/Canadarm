@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import utils.GlobalCfg;
+import utils.GlbCfg;
 
 public class PathFinder {
 
@@ -69,7 +69,7 @@ public class PathFinder {
 
 			for (Node goal : rrtB.sampled) {
 				double dist = goal.rs.distance(sampleFromA.rs);
-				if (dist > GlobalCfg.rrtMaxRadianDistance
+				if (dist > GlbCfg.rrtMaxRadianDistance
 						* sampleFromA.rs.segments.size())
 					continue;
 
@@ -100,9 +100,8 @@ public class PathFinder {
 		Boolean connected = false;
 		ConnectedPath conn = new ConnectedPath(connect2I, connect2G, connected);
 
-		while (!conn.connected
-				&& rrtFromInit.size() < GlobalCfg.maxNumberOfSamples
-				&& rrtFromGoal.size() < GlobalCfg.maxNumberOfSamples) {
+		while (!conn.connected && rrtFromInit.size() < GlbCfg.maxNumberOfSamples
+				&& rrtFromGoal.size() < GlbCfg.maxNumberOfSamples) {
 			System.out.println("Tree Size: " + rrtFromInit.size());
 			System.out.println("Tree Size: " + rrtFromGoal.size());
 

@@ -3,7 +3,7 @@ package comp;
 import java.util.ArrayList;
 import java.util.List;
 
-import utils.GlobalCfg;
+import utils.GlbCfg;
 
 public class Coordinate {
 
@@ -20,8 +20,8 @@ public class Coordinate {
 
 	@Override
 	public int hashCode() {
-		return GlobalCfg.prime1 * Double.valueOf(X).hashCode()
-				+ GlobalCfg.prime5 * Double.valueOf(Y).hashCode();
+		return GlbCfg.prime1 * Double.valueOf(X).hashCode()
+				+ GlbCfg.prime5 * Double.valueOf(Y).hashCode();
 	}
 
 	@Override
@@ -40,8 +40,8 @@ public class Coordinate {
 		if (this.getClass() != object.getClass())
 			return false;
 		Coordinate c = (Coordinate) object;
-		return ((Math.abs(this.X - c.X) < GlobalCfg.epsilon)
-				&& (Math.abs(this.Y - c.Y) < GlobalCfg.epsilon));
+		return ((Math.abs(this.X - c.X) < GlbCfg.epsilon)
+				&& (Math.abs(this.Y - c.Y) < GlbCfg.epsilon));
 	}
 
 	@Override

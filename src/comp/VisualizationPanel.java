@@ -19,7 +19,7 @@ import javax.swing.Timer;
 
 import comp.RobotState.RobotStateOutPut;
 import solve.Visualizer;
-import utils.GlobalCfg;
+import utils.GlbCfg;
 
 public class VisualizationPanel extends JComponent {
 
@@ -180,22 +180,22 @@ public class VisualizationPanel extends JComponent {
 
 		double X1 = (rs.ee1.X
 				+ (Math.cos(rs.ee1Segments.get(0).angle.radian + Math.PI)
-						* GlobalCfg.eeLabelOffset))
-				* GlobalCfg.displayPanelSize;
+						* GlbCfg.eeLabelOffset))
+				* GlbCfg.displayPanelSize;
 		double Y1 = (1 - (rs.ee1.Y
 				+ (Math.sin(rs.ee1Segments.get(0).angle.radian + Math.PI)
-						* GlobalCfg.eeLabelOffset)))
-				* GlobalCfg.displayPanelSize;
+						* GlbCfg.eeLabelOffset)))
+				* GlbCfg.displayPanelSize;
 
 		double X2 = (rs.ee2.X
 				+ (Math.cos(rs.ee2Segments.get(0).angle.radian + Math.PI)
-						* GlobalCfg.eeLabelOffset))
-				* GlobalCfg.displayPanelSize;
+						* GlbCfg.eeLabelOffset))
+				* GlbCfg.displayPanelSize;
 
 		double Y2 = (1 - (rs.ee2.Y
 				+ (Math.sin(rs.ee2Segments.get(0).angle.radian + Math.PI)
-						* GlobalCfg.eeLabelOffset)))
-				* GlobalCfg.displayPanelSize;
+						* GlbCfg.eeLabelOffset)))
+				* GlbCfg.displayPanelSize;
 
 		FontMetrics fm = g2.getFontMetrics();
 
@@ -232,11 +232,11 @@ public class VisualizationPanel extends JComponent {
 		g2.setColor(color);
 		g2.setStroke(new BasicStroke(3f));
 
-		double X = gpl.X - GlobalCfg.gpRadius;
-		double Y = gpl.Y - GlobalCfg.gpRadius;
+		double X = gpl.X - GlbCfg.gpRadius;
+		double Y = gpl.Y - GlbCfg.gpRadius;
 
-		Ellipse2D.Double g = new Ellipse2D.Double(X, Y, 2 * GlobalCfg.gpRadius,
-				2 * GlobalCfg.gpRadius);
+		Ellipse2D.Double g = new Ellipse2D.Double(X, Y, 2 * GlbCfg.gpRadius,
+				2 * GlbCfg.gpRadius);
 		g2.fill(transform.createTransformedShape(g));
 	}
 
@@ -247,7 +247,7 @@ public class VisualizationPanel extends JComponent {
 			return;
 		}
 
-		this.setSize(GlobalCfg.displayPanelSize, GlobalCfg.displayPanelSize);
+		this.setSize(GlbCfg.displayPanelSize, GlbCfg.displayPanelSize);
 		this.calculateTransform();
 		Graphics2D g2 = (Graphics2D) graphics;
 		g2.setColor(Color.WHITE);
@@ -256,22 +256,20 @@ public class VisualizationPanel extends JComponent {
 
 		// System.out.println("[Paint] : " + this.probNSolt.board.state);
 		for (BoundingBox ob : Board.obstacles)
-			this.paintObstacle(g2, ob, GlobalCfg.obstacleColor);
+			this.paintObstacle(g2, ob, GlbCfg.obstacleColor);
 
 		for (Coordinate gpl : Board.grapples)
-			this.paintGrapple(g2, gpl, GlobalCfg.grapplesColor);
+			this.paintGrapple(g2, gpl, GlbCfg.grapplesColor);
 
 		if (this.animating) {
 			if (!this.probNSolt.isSolutionLoaded()) {
 				return;
 			}
 			this.paintRobot(g2, this.probNSolt.board.state,
-					GlobalCfg.robotStateColor);
+					GlbCfg.robotStateColor);
 		} else {
-			this.paintRobot(g2, Board.initRobotState,
-					GlobalCfg.robotStateColor);
-			this.paintRobot(g2, Board.goalRobotState,
-					GlobalCfg.targetStateColor);
+			this.paintRobot(g2, Board.initRobotState, GlbCfg.robotStateColor);
+			this.paintRobot(g2, Board.goalRobotState, GlbCfg.targetStateColor);
 		}
 	}
 

@@ -3,7 +3,7 @@ package comp;
 import java.util.HashSet;
 import java.util.Set;
 
-import utils.GlobalCfg;
+import utils.GlbCfg;
 
 public class RRT {
 
@@ -43,10 +43,10 @@ public class RRT {
 		}
 
 		// step is too small
-		if (min < GlobalCfg.epsilon * minNode.rs.segments.size())
+		if (min < GlbCfg.epsilon * minNode.rs.segments.size())
 			return null;
 
-		if (min > GlobalCfg.rrtMaxRadianDistance * minNode.rs.segments.size()) {
+		if (min > GlbCfg.rrtMaxRadianDistance * minNode.rs.segments.size()) {
 			if (!minNode.rs.findSampleWithin(state))
 				return null;
 		}

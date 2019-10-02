@@ -2,19 +2,17 @@ package comp;
 
 import java.util.Random;
 
-import utils.GlobalCfg;
+import utils.GlbCfg;
 
-public class RoboticUtilFunctions {
+public class RoboticUtils {
 
 	private static final Random random = new Random();
 
 	public static double uniformAngleSampling() {
-		return uniformAngleSamplingBetween(GlobalCfg.angleLowerBound,
-				GlobalCfg.angleUpperBound);
+		return uniformSample(GlbCfg.angleLowerBound, GlbCfg.angleUpperBound);
 	}
 
-	public static double uniformAngleSamplingBetween(double lower,
-			double upper) {
+	public static double uniformSample(double lower, double upper) {
 		double width = upper - lower;
 		return lower + width * random.nextDouble();
 	}

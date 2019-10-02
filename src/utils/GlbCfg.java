@@ -2,7 +2,7 @@ package utils;
 
 import java.awt.Color;
 
-public final class GlobalCfg {
+public final class GlbCfg {
 
 	public static final int prime1 = 7;
 	public static final int prime2 = 13;

@@ -1,6 +1,6 @@
 package comp;
 
-import utils.GlobalCfg;
+import utils.GlbCfg;
 
 public class Angle {
 
@@ -81,7 +81,7 @@ public class Angle {
 		if (this.getClass() != object.getClass())
 			return false;
 		Angle a = (Angle) object;
-		return Math.abs(this.radian - a.radian) < GlobalCfg.epsilon;
+		return Math.abs(this.radian - a.radian) < GlbCfg.epsilon;
 	}
 
 	@Override

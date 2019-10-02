@@ -3,7 +3,7 @@ package comp;
 import java.util.ArrayList;
 import java.util.List;
 
-import utils.GlobalCfg;
+import utils.GlbCfg;
 
 public class Planner {
 
@@ -37,7 +37,7 @@ class GlobalPlanner {
 
 		while (!found) {
 			for (Segment seg : local) {
-				double r = RoboticUtilFunctions.uniformAngleSampling();
+				double r = RoboticUtils.uniformAngleSampling();
 				seg.angle.radian = r;
 				seg.angle.normalize();
 			}
@@ -69,13 +69,13 @@ class localPlanner {
 			Coordinate localTo = to.joints.get(i);
 
 			for (BoundingBox b : Board.obstacles) {
-				if (!RoboticUtilFunctions.testBoundingBoxCollision(localFrom,
-						localTo, b.bl, b.tr))
+				if (!RoboticUtils.testBoundingBoxCollision(localFrom, localTo,
+						b.bl, b.tr))
 					continue;
 
 				for (Line l : b.edges) {
-					if (RoboticUtilFunctions.testLineCollision(localFrom,
-							localTo, l.p, l.q))
+					if (RoboticUtils.testLineCollision(localFrom, localTo, l.p,
+							l.q))
 						return false;
 				}
 			}
@@ -98,12 +98,12 @@ class localPlanner {
 			Segment sf = rsFrom.segments.get(i);
 			Segment st = rsTo.segments.get(i);
 
-			double diff = RoboticUtilFunctions.diffInRadian(sf.angle, st.angle);
+			double diff = RoboticUtils.diffInRadian(sf.angle, st.angle);
 
 			if (diff > 0) {
-				while (diff > GlobalCfg.deltaRadian) {
-					diff -= GlobalCfg.deltaRadian;
-					sf.angle.addInRadian(GlobalCfg.deltaRadian);
+				while (diff > GlbCfg.deltaRadian) {
+					diff -= GlbCfg.deltaRadian;
+					sf.angle.addInRadian(GlbCfg.deltaRadian);
 					rsFrom.calcJoints();
 
 					RobotState lrs = rsFrom.clone();
@@ -112,9 +112,9 @@ class localPlanner {
 					changes.add(lrs);
 				}
 			} else {
-				while (Math.abs(diff) > GlobalCfg.deltaRadian) {
-					diff += GlobalCfg.deltaRadian;
-					sf.angle.minusInRadian(GlobalCfg.deltaRadian);
+				while (Math.abs(diff) > GlbCfg.deltaRadian) {
+					diff += GlbCfg.deltaRadian;
+					sf.angle.minusInRadian(GlbCfg.deltaRadian);
 					rsFrom.calcJoints();
 
 					RobotState lrs = rsFrom.clone();
@@ -124,7 +124,7 @@ class localPlanner {
 				}
 			}
 
-			if (Math.abs(diff) < GlobalCfg.epsilon)
+			if (Math.abs(diff) < GlbCfg.epsilon)
 				continue;
 
 			sf.angle.addInRadian(diff);
