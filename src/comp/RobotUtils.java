@@ -1,5 +1,6 @@
 package comp;
 
+import java.util.List;
 import java.util.Random;
 
 import utils.GlbCfg;
@@ -99,6 +100,46 @@ public class RobotUtils {
 		if (!testBoundingBoxCollision(p1, q1, p2, q2))
 			return false;
 		return testOrientationCollision(p1, q1, p2, q2);
+	}
+
+	public static synchronized boolean comparable(RobotState comp1,
+			RobotState comp2) {
+		// return false if not same grapple point
+		if (comp1.ee1Grappled != comp2.ee1Grappled
+				|| comp1.ee2Grappled != comp2.ee2Grappled)
+			return false;
+
+		if (comp1.ee1Grappled && !comp1.ee1.equals(comp2.ee1))
+			return false;
+
+		if (comp1.ee2Grappled && !comp1.ee2.equals(comp2.ee2))
+			return false;
+
+		return true;
+	}
+
+	public static synchronized double distance(RobotState from, RobotState to) {
+		double dist = 0.0;
+
+		List<Segment> local;
+		List<Segment> comp;
+
+		if (from.ee1Grappled) {
+			local = from.ee1Segments;
+			comp = to.ee1Segments;
+		} else {
+			local = from.ee2Segments;
+			comp = to.ee2Segments;
+		}
+
+		for (int i = 0; i < local.size(); i++) {
+			Segment seg1 = local.get(i);
+			Segment seg2 = comp.get(i);
+			dist += Math.abs(RobotUtils.diffInRadian(seg1.angle, seg2.angle));
+			dist += Math.abs(seg1.len - seg2.len);
+		}
+
+		return dist;
 	}
 
 }

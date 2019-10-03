@@ -35,7 +35,7 @@ public class RRT {
 		double min = Double.MAX_VALUE;
 		Node minNode = null;
 		for (Node node : this.sampled) {
-			double local = node.rs.distance(state);
+			double local = RobotUtils.distance(node.rs, state);
 			if (local < min) {
 				min = local;
 				minNode = node;

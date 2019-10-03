@@ -9,6 +9,7 @@ import utils.GlbCfg;
 public class PathFinder {
 
 	private Board board;
+	private Planner planner;
 
 	@SuppressWarnings("unused")
 	private PathFinder() {
@@ -16,9 +17,8 @@ public class PathFinder {
 
 	public PathFinder(Board board) {
 		this.board = board;
+		this.planner = new Planner();
 	}
-
-	Planner planner = new Planner();
 
 	public List<RobotState> findPath() {
 		Node connect2A = null;
@@ -78,7 +78,7 @@ public class PathFinder {
 			Node minNode = null;
 
 			for (Node goal : rrtB.sampled) {
-				double dist = goal.rs.distance(sampleFromA.rs);
+				double dist = RobotUtils.distance(goal.rs, sampleFromA.rs);
 				if (dist > GlbCfg.rrtMaxRadianDistance
 						* sampleFromA.rs.segments.size())
 					continue;
@@ -123,6 +123,12 @@ public class PathFinder {
 
 		return conn;
 	}
+
+	/*-
+	private List<Board> planTransition() {
+		this.board.goalRobotState
+	}
+	*/
 
 }
 

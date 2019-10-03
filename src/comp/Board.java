@@ -8,13 +8,14 @@ public class Board {
 	public RobotState initRobotState;
 	public RobotState goalRobotState;
 
-	public RobotState state;
+	RobotState state;
+	List<Board> transition;
 
-	public static List<RobotState> transition = new ArrayList<RobotState>();
 	public static final List<Coordinate> grapples = new ArrayList<Coordinate>();
 	public static final List<BoundingBox> obstacles = new ArrayList<BoundingBox>();
 
 	public Board() {
+		this.transition = new ArrayList<Board>();
 	}
 
 	@Override
