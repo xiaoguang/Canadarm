@@ -8,10 +8,19 @@ import utils.GlbCfg;
 
 public class PathFinder {
 
+	private Board board;
+
+	@SuppressWarnings("unused")
+	private PathFinder() {
+	}
+
+	public PathFinder(Board board) {
+		this.board = board;
+	}
+
 	Planner planner = new Planner();
 
-	public List<RobotState> findPath(RobotState initState,
-			RobotState goalState) {
+	public List<RobotState> findPath() {
 		Node connect2A = null;
 		Node connect2B = null;
 
@@ -19,7 +28,8 @@ public class PathFinder {
 		List<RobotState> towardsB = null;
 		List<RobotState> steps = null;
 
-		ConnectedPath found = this.findConnector(initState, goalState);
+		ConnectedPath found = this.findConnector(this.board.initRobotState,
+				this.board.goalRobotState);
 
 		if (found.connected) {
 			towardsA = new ArrayList<RobotState>();
@@ -38,7 +48,7 @@ public class PathFinder {
 			}
 
 			if (towardsA.get(towardsA.size() - 1)
-					.equals(Board.initRobotState)) {
+					.equals(board.initRobotState)) {
 				steps = towardsA;
 				Collections.reverse(steps);
 				steps.addAll(towardsB);

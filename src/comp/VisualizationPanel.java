@@ -268,8 +268,10 @@ public class VisualizationPanel extends JComponent {
 			this.paintRobot(g2, this.probNSolt.board.state,
 					GlbCfg.robotStateColor);
 		} else {
-			this.paintRobot(g2, Board.initRobotState, GlbCfg.robotStateColor);
-			this.paintRobot(g2, Board.goalRobotState, GlbCfg.targetStateColor);
+			this.paintRobot(g2, this.probNSolt.board.initRobotState,
+					GlbCfg.robotStateColor);
+			this.paintRobot(g2, this.probNSolt.board.goalRobotState,
+					GlbCfg.targetStateColor);
 		}
 	}
 

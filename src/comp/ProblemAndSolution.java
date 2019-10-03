@@ -21,7 +21,7 @@ public class ProblemAndSolution {
 	public ProblemAndSolution() {
 		this.problemLoaded = false;
 		this.solutionLoaded = false;
-		this.board = null;
+		this.board = new Board();
 		this.robotStates = null;
 	}
 
@@ -106,7 +106,7 @@ public class ProblemAndSolution {
 						segs);
 
 			}
-			Board.initRobotState = state.clone();
+			this.board.initRobotState = state.clone();
 		}
 
 		{
@@ -133,12 +133,12 @@ public class ProblemAndSolution {
 			}
 			if (grappleIndex == 2) {
 				Collections.reverse(segs);
-				Board.goalRobotState = RobotState.createRobotStateFromEE2(
+				this.board.goalRobotState = RobotState.createRobotStateFromEE2(
 						new Coordinate(Double.parseDouble(coord[0]),
 								Double.parseDouble(coord[1])),
 						segs);
 			} else {
-				Board.goalRobotState = RobotState.createRobotStateFromEE1(
+				this.board.goalRobotState = RobotState.createRobotStateFromEE1(
 						new Coordinate(Double.parseDouble(coord[0]),
 								Double.parseDouble(coord[1])),
 						segs);
@@ -172,7 +172,7 @@ public class ProblemAndSolution {
 			Board.obstacles.add(new BoundingBox(bl, tr));
 		}
 
-		this.board = new Board(state);
+		this.board.state = state;
 		this.problemLoaded = true;
 	}
 

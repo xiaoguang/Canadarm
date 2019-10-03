@@ -5,20 +5,16 @@ import java.util.List;
 
 public class Board {
 
-	public static RobotState initRobotState;
-	public static RobotState goalRobotState;
+	public RobotState initRobotState;
+	public RobotState goalRobotState;
 
 	public RobotState state;
 
+	public static List<RobotState> transition = new ArrayList<RobotState>();
 	public static final List<Coordinate> grapples = new ArrayList<Coordinate>();
 	public static final List<BoundingBox> obstacles = new ArrayList<BoundingBox>();
 
-	@SuppressWarnings("unused")
-	private Board() {
-	}
-
-	public Board(RobotState state) {
-		this.state = state;
+	public Board() {
 	}
 
 	@Override
@@ -26,10 +22,10 @@ public class Board {
 		String str = "";
 		str = str.concat(
 				"Board :" + System.lineSeparator() + System.lineSeparator());
-		str = str.concat(
-				"Init " + Board.initRobotState + System.lineSeparator());
-		str = str.concat(
-				"Goal " + Board.goalRobotState + System.lineSeparator());
+		str = str
+				.concat("Init " + this.initRobotState + System.lineSeparator());
+		str = str
+				.concat("Goal " + this.goalRobotState + System.lineSeparator());
 		str = str.concat("Current " + this.state + System.lineSeparator());
 		str = str.concat("Grapple " + grapples + System.lineSeparator());
 		str = str.concat("Grapple " + obstacles + System.lineSeparator());
@@ -47,12 +43,6 @@ public class Board {
 
 		Board b = (Board) object;
 		return this.equals(b);
-	}
-
-	@Override
-	public Board clone() {
-		RobotState cpy = this.state.clone();
-		return new Board(cpy);
 	}
 
 }

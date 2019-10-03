@@ -6,7 +6,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import comp.Board;
 import comp.PathFinder;
 import comp.ProblemAndSolution;
 import comp.RobotState;
@@ -16,7 +15,6 @@ public class Solver {
 
 	public static void main(String[] args) {
 		ProblemAndSolution probNSolt = new ProblemAndSolution();
-		PathFinder finder = new PathFinder();
 
 		try {
 			Path p = Paths.get(args[0]);
@@ -26,12 +24,11 @@ public class Solver {
 					.concat("output_").concat(fileName);
 			BufferedWriter writer = new BufferedWriter(
 					new FileWriter(outputFile));
-
 			probNSolt.readProblemFromInput(args[0]);
 			System.out.println(probNSolt.board.toString());
 
-			List<RobotState> path = finder.findPath(Board.initRobotState,
-					Board.goalRobotState);
+			PathFinder finder = new PathFinder(probNSolt.board);
+			List<RobotState> path = finder.findPath();
 			for (RobotState state : path) {
 				RobotStateOutPut rso = new RobotState.RobotStateOutPut(state);
 				writer.write(rso.toString().concat(System.lineSeparator()));
