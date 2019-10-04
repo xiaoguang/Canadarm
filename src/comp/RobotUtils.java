@@ -142,4 +142,36 @@ public class RobotUtils {
 		return dist;
 	}
 
+	public static synchronized double euclideanDistance(Coordinate c1,
+			Coordinate c2) {
+		double dist = 0.0;
+
+		dist += Math.pow((c1.X - c2.X), 2);
+		dist += Math.pow((c1.Y - c2.Y), 2);
+		dist = Math.sqrt(dist);
+
+		return dist;
+	}
+
+	public static synchronized Angle findAngle(Coordinate p1, Coordinate q1,
+			Coordinate p2, Coordinate q2) {
+		double p1x = p1.X;
+		double q1x = q1.X;
+		double p1y = p1.Y;
+		double q1y = q1.Y;
+
+		double p2x = p2.X;
+		double q2x = q2.X;
+		double p2y = p2.Y;
+		double q2y = q2.Y;
+
+		double radian1 = Math.atan2((p1y - q1y), (p1x - q1x));
+		double radian2 = Math.atan2((p2y - q2y), (p2x - q2x));
+
+		Angle a = new AngleInRadian(radian1);
+		a.minusInRadian(radian2);
+
+		return a;
+	}
+
 }

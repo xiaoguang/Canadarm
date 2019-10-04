@@ -91,7 +91,8 @@ public class RobotState {
 		}
 		for (int i = this.segments.size() - 2; i > -1; i--) {
 			Segment local = this.segments.get(i).clone();
-			local.angle.negative();
+			Angle localAngle = this.segments.get(i + 1).angle.clone();
+			local.angle = localAngle.negative();
 
 			if (this.ee1Grappled) {
 				this.ee2Segments.add(local);
@@ -99,6 +100,26 @@ public class RobotState {
 				this.ee1Segments.add(local);
 			}
 		}
+	}
+
+	public void switchGrappledEE() {
+		this.calcJoints();
+		List<Segment> newEnd;
+
+		if (this.ee1Grappled) {
+			this.ee1Grappled = false;
+			this.ee2Grappled = true;
+			newEnd = this.ee2Segments;
+		} else {
+			this.ee2Grappled = false;
+			this.ee1Grappled = true;
+			newEnd = this.ee1Segments;
+		}
+
+		this.segments.clear();
+		this.segments = newEnd.stream().map(e -> e.clone())
+				.collect(Collectors.toList());
+		this.calcJoints();
 	}
 
 	public String write() {
@@ -174,6 +195,7 @@ public class RobotState {
 
 	// sample in between this and state
 	boolean findSampleWithin(RobotState state) {
+		// precautionary test, can be removed after stabilized
 		// return false if not comparable
 		if (!RobotUtils.comparable(this, state))
 			return false;
@@ -185,7 +207,7 @@ public class RobotState {
 			to.angle.radian = RobotUtils.uniformSample(from.angle.radian,
 					to.angle.radian);
 			to.angle.normalize();
-			dist += RobotUtils.diffInRadian(from.angle, to.angle);
+			dist += Math.abs(RobotUtils.diffInRadian(from.angle, to.angle));
 			to.len = RobotUtils.uniformSample(from.len, to.len);
 			dist += Math.abs(from.len - to.len);
 		}

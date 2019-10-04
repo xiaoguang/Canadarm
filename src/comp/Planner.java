@@ -33,6 +33,42 @@ public class Planner {
 		return sample;
 	}
 
+	public TransitionState findTransition(RobotState state, Coordinate to) {
+		if (state.segments.size() < 2)
+			return new TransitionState(null, false);
+
+		boolean found = false;
+		int numberOfSamples = 0;
+		RobotState sample = state.clone();
+		List<Segment> local = sample.segments;
+
+		while (!found && numberOfSamples < GlbCfg.maxNumberOfSamples) {
+			for (Segment seg : local) {
+				double r = RobotUtils.uniformAngleSampling();
+				seg.angle.radian = r;
+				seg.angle.normalize();
+
+				double l = RobotUtils.uniformSample(seg.min, seg.max);
+				seg.len = l;
+			}
+			sample.calcJoints();
+
+			Segment seg = sample.segments.get(sample.segments.size() - 1);
+			Coordinate prev = sample.joints.get(sample.segments.size() - 2);
+			Coordinate from = sample.joints.get(sample.segments.size() - 1);
+			double dist = RobotUtils.euclideanDistance(to, from);
+			if (dist < seg.max) {
+				seg.len = dist;
+				seg.angle = RobotUtils.findAngle(to, from, from, prev);
+				sample.calcJoints();
+				if (!sample.collision())
+					found = true;
+			}
+		}
+
+		return new TransitionState(sample, found);
+	}
+
 	public boolean validate(RobotState from, RobotState to) {
 		if (from.ee1Grappled != to.ee1Grappled
 				|| from.ee2Grappled != to.ee2Grappled
