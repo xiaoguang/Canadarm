@@ -46,7 +46,8 @@ public class RRT {
 		if (min < GlbCfg.epsilon * minNode.rs.segments.size())
 			return null;
 
-		if (min > GlbCfg.rrtMaxRadianDistance * minNode.rs.segments.size()) {
+		if (min > (GlbCfg.rrtMaxRadianDistance + GlbCfg.rrtMaxLengthDistance)
+				* minNode.rs.segments.size()) {
 			if (!minNode.rs.findSampleWithin(state))
 				return null;
 		}

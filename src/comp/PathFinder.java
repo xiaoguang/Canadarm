@@ -27,20 +27,9 @@ public class PathFinder {
 		List<RobotState> towardsA = null;
 		List<RobotState> towardsB = null;
 		List<RobotState> steps = new ArrayList<RobotState>();
-
 		List<Board> transition = this.planGrappleTransition();
 
-		int idx = 0;
 		for (Board bd : transition) {
-			if (idx != 0) {
-				System.out.println("\n\n\n");
-				System.out.println(
-						new RobotState.RobotStateOutPut(bd.initRobotState));
-				System.out.println("\n\n\n");
-				continue;
-			}
-
-			idx++;
 			ConnectedPath found = this.findConnector(bd.initRobotState,
 					bd.goalRobotState);
 
@@ -94,7 +83,8 @@ public class PathFinder {
 
 			for (Node goal : rrtB.sampled) {
 				double dist = RobotUtils.distance(goal.rs, sampleFromA.rs);
-				if (dist > GlbCfg.rrtMaxRadianDistance
+				if (dist > (GlbCfg.rrtMaxRadianDistance
+						+ GlbCfg.rrtMaxLengthDistance)
 						* sampleFromA.rs.segments.size())
 					continue;
 

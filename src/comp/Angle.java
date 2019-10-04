@@ -11,7 +11,10 @@ public class Angle {
 	}
 
 	protected void normalize() {
-		this.radian = (radian + Math.PI) % (2 * Math.PI) - Math.PI;
+		if (this.radian > 0)
+			this.radian = (radian + Math.PI) % (2 * Math.PI) - Math.PI;
+		else
+			this.radian = (radian - Math.PI) % (2 * Math.PI) + Math.PI;
 		this.degree = this.radian * 180 / Math.PI;
 	}
 
