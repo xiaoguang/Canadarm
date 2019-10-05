@@ -89,15 +89,23 @@ public class VisualizationPanel extends JComponent {
 	}
 
 	public void gotoFrame(int frameNumber) {
-		if (!animating || (this.frameNumber != null
+		if (!this.animating || (this.frameNumber != null
 				&& this.frameNumber == frameNumber)) {
 			return;
 		}
 		this.frameNumber = frameNumber;
+		System.out.println("\n" + this.frameNumber + "\n");
 		this.visualizer.setFrameNumber(frameNumber);
-		this.currentRobotState = this.probNSolt.robotStates.get(frameNumber);
+		this.currentRobotState = this.probNSolt.robotStates
+				.get(this.frameNumber);
+
+		if (this.frameNumber == 0) {
+			this.probNSolt.board.state = this.probNSolt.board.initRobotState
+					.clone();
+		}
+
 		if (this.currentRobotState.ee.equals(this.probNSolt.board.state.ee1)) {
-			// System.out.println("Grapple 1");
+			System.out.println("Grapple 1");
 			this.probNSolt.board.state.ee1Grappled = true;
 			this.probNSolt.board.state.ee2Grappled = false;
 
@@ -108,9 +116,9 @@ public class VisualizationPanel extends JComponent {
 			}
 
 			this.probNSolt.board.state.calcJoints();
-		}
-		if (this.currentRobotState.ee.equals(this.probNSolt.board.state.ee2)) {
-			// System.out.println("Grapple 2");
+		} else if (this.currentRobotState.ee
+				.equals(this.probNSolt.board.state.ee2)) {
+			System.out.println("Grapple 2");
 			this.probNSolt.board.state.ee1Grappled = false;
 			this.probNSolt.board.state.ee2Grappled = true;
 
@@ -121,12 +129,18 @@ public class VisualizationPanel extends JComponent {
 			}
 
 			this.probNSolt.board.state.calcJoints();
+		} else {
+			System.out.println("ELSE");
+			System.out.println(this.currentRobotState.ee);
+			System.out.println(this.probNSolt.board.state.ee1);
+			System.out.println(this.probNSolt.board.state.ee2);
 		}
+
 		repaint();
 	}
 
 	public int getFrameNumber() {
-		return frameNumber;
+		return this.frameNumber;
 	}
 
 	public void playPauseAnimation() {
@@ -145,12 +159,13 @@ public class VisualizationPanel extends JComponent {
 	}
 
 	public void stopAnimation() {
-		if (animationTimer != null) {
-			animationTimer.stop();
+		if (this.animationTimer != null) {
+			this.animationTimer.stop();
 		}
-		animating = false;
-		visualizer.setPlaying(false);
-		frameNumber = null;
+		System.out.println("\n\n\nStop Animation\n\n\n");
+		this.animating = false;
+		this.visualizer.setPlaying(false);
+		this.frameNumber = null;
 	}
 
 	public ProblemAndSolution getProblemAndSolution() {
@@ -249,12 +264,12 @@ public class VisualizationPanel extends JComponent {
 
 		this.setSize(GlbCfg.displayPanelSize, GlbCfg.displayPanelSize);
 		this.calculateTransform();
+
 		Graphics2D g2 = (Graphics2D) graphics;
 		g2.setColor(Color.WHITE);
 		g2.fillRect(0, 0, getWidth(), getHeight());
 		g2.drawImage(this.bgImage, 0, 0, null);
 
-		// System.out.println("[Paint] : " + this.probNSolt.board.state);
 		for (BoundingBox ob : Board.obstacles)
 			this.paintObstacle(g2, ob, GlbCfg.obstacleColor);
 
