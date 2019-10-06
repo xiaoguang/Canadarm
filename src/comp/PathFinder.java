@@ -27,7 +27,8 @@ public class PathFinder {
 		List<RobotState> towardsA = null;
 		List<RobotState> towardsB = null;
 		List<RobotState> steps = new ArrayList<RobotState>();
-		List<Board> transition = this.planGrappleTransition();
+		List<Board> transition = new ArrayList<Board>();
+		this.planGrappleTransition(this.board, transition);
 
 		for (Board bd : transition) {
 			ConnectedPath found = this.findConnector(bd.initRobotState,
@@ -145,50 +146,179 @@ public class PathFinder {
 		return null;
 	}
 
-	private List<Board> planGrappleTransition() {
-
-		List<Board> transition = new ArrayList<Board>();
-		List<Coordinate> midway = new ArrayList<Coordinate>();
-
+	private boolean planGrappleTransition(Board targetBoard,
+			List<Board> transition) {
 		// same grapple
-		if (RobotUtils.comparable(this.board.goalRobotState,
-				this.board.initRobotState)) {
-			transition.add(this.board);
-			return transition;
+		if (RobotUtils.comparable(targetBoard.goalRobotState,
+				targetBoard.initRobotState)) {
+			transition.add(targetBoard);
+			return true;
 		}
 
 		// return null if no transitions are possible
-		if (Board.grapples.size() == 1)
-			return null;
+		if (targetBoard.grapples.size() == 1)
+			return false;
 
-		if (Board.grapples.size() == 2) {
-			if (this.board.initRobotState.ee1Grappled == this.board.goalRobotState.ee1Grappled
-					|| this.board.initRobotState.ee2Grappled == this.board.goalRobotState.ee2Grappled)
-				return null;
+		if (targetBoard.grapples.size() == 2) {
+			if (targetBoard.initRobotState.ee1Grappled == targetBoard.goalRobotState.ee1Grappled
+					|| targetBoard.initRobotState.ee2Grappled == targetBoard.goalRobotState.ee2Grappled)
+				return true;
 
-			RobotState finalGoalState = this.board.goalRobotState.clone();
-
+			RobotState finalGoalState = targetBoard.goalRobotState.clone();
 			RobotState transitionState = this.generateTransitionRobotState(
-					this.board.initRobotState, this.board.goalRobotState);
-			Board b1 = new Board();
-			b1.initRobotState = this.board.initRobotState;
-			b1.goalRobotState = transitionState;
-			b1.state = this.board.initRobotState;
+					targetBoard.initRobotState, targetBoard.goalRobotState);
+
+			Board b1 = targetBoard.clone();
+			b1.initRobotState = targetBoard.initRobotState.clone();
+			b1.goalRobotState = transitionState.clone();
+			b1.state = targetBoard.initRobotState.clone();
 			transition.add(b1);
 
-			Board b2 = new Board();
+			Board b2 = targetBoard.clone();
 			RobotState newInit = transitionState.clone();
 			newInit.switchGrappledEE();
 			b2.initRobotState = newInit;
 			b2.goalRobotState = finalGoalState;
-			b2.state = newInit;
+			b2.state = newInit.clone();
 			transition.add(b2);
+
+			return true;
 		}
 
-		// need midway
+		if (targetBoard.grapples.size() == 3) {
+			if (targetBoard.initRobotState.ee1Grappled != targetBoard.goalRobotState.ee1Grappled
+					|| targetBoard.initRobotState.ee2Grappled != targetBoard.goalRobotState.ee2Grappled)
+				return false;
 
-		return transition;
+			Coordinate endEffector;
+			if (targetBoard.initRobotState.ee1Grappled)
+				endEffector = targetBoard.initRobotState.ee1;
+			else
+				endEffector = targetBoard.initRobotState.ee2;
 
+			RobotState finalGoalState = targetBoard.goalRobotState.clone();
+
+			double minDist = Double.MAX_VALUE;
+			Coordinate min = null;
+			for (Coordinate c : targetBoard.grapples) {
+				if (!c.equals(endEffector)) {
+					double dist = RobotUtils.euclideanDistance(endEffector, c);
+					if (dist < minDist) {
+						minDist = dist;
+						min = c;
+					}
+				}
+			}
+
+			TransitionState transitionState = planner
+					.findTransition(targetBoard.initRobotState, min);
+			if (!transitionState.found)
+				return false;
+
+			Board b1 = targetBoard.clone();
+			b1.initRobotState = targetBoard.initRobotState.clone();
+			b1.goalRobotState = transitionState.state.clone();
+			b1.state = targetBoard.initRobotState.clone();
+			transition.add(b1);
+
+			Board b2 = targetBoard.clone();
+			RobotState newInit = transitionState.state.clone();
+			newInit.switchGrappledEE();
+			b2.initRobotState = newInit;
+			b2.goalRobotState = finalGoalState;
+			b2.state = newInit.clone();
+
+			b2.removeGrapple(endEffector);
+			planGrappleTransition(b2, transition);
+		}
+
+		if (targetBoard.grapples.size() == 4) {
+			if (targetBoard.initRobotState.ee1Grappled != targetBoard.goalRobotState.ee1Grappled
+					&& targetBoard.initRobotState.ee2Grappled != targetBoard.goalRobotState.ee2Grappled) {
+
+				Coordinate endEffector;
+				if (targetBoard.initRobotState.ee1Grappled)
+					endEffector = targetBoard.initRobotState.ee1;
+				else
+					endEffector = targetBoard.initRobotState.ee2;
+
+				RobotState finalGoalState = targetBoard.goalRobotState.clone();
+
+				double minDist = Double.MAX_VALUE;
+				Coordinate min = null;
+				for (Coordinate c : targetBoard.grapples) {
+					if (!c.equals(endEffector)) {
+						double dist = RobotUtils.euclideanDistance(endEffector,
+								c);
+						if (dist < minDist) {
+							minDist = dist;
+							min = c;
+						}
+					}
+				}
+
+				TransitionState transitionState = planner
+						.findTransition(targetBoard.initRobotState, min);
+				if (!transitionState.found)
+					return false;
+
+				Board b1 = targetBoard.clone();
+				b1.initRobotState = targetBoard.initRobotState.clone();
+				b1.goalRobotState = transitionState.state.clone();
+				b1.state = targetBoard.initRobotState.clone();
+				transition.add(b1);
+
+				Board b2 = targetBoard.clone();
+				RobotState newInit = transitionState.state.clone();
+				newInit.switchGrappledEE();
+				b2.initRobotState = newInit;
+				b2.goalRobotState = finalGoalState;
+				b2.state = newInit.clone();
+
+				b2.removeGrapple(endEffector);
+				planGrappleTransition(b2, transition);
+			}
+
+			else if (targetBoard.initRobotState.ee1Grappled == targetBoard.goalRobotState.ee1Grappled
+					&& targetBoard.initRobotState.ee2Grappled == targetBoard.goalRobotState.ee2Grappled) {
+
+				Coordinate initEndEffector;
+				if (targetBoard.initRobotState.ee1Grappled)
+					initEndEffector = targetBoard.initRobotState.ee1;
+				else
+					initEndEffector = targetBoard.initRobotState.ee2;
+
+				Coordinate goalEndEffector;
+				if (targetBoard.goalRobotState.ee1Grappled)
+					goalEndEffector = targetBoard.goalRobotState.ee1;
+				else
+					goalEndEffector = targetBoard.goalRobotState.ee2;
+
+				double maxDist = Double.MIN_VALUE;
+				Coordinate max = null;
+				for (Coordinate c : targetBoard.grapples) {
+					if (!c.equals(initEndEffector)
+							&& !c.equals(goalEndEffector)) {
+						double dist = RobotUtils
+								.euclideanDistance(initEndEffector, c);
+						if (dist > maxDist) {
+							maxDist = dist;
+							max = c;
+						}
+					}
+				}
+
+				targetBoard.removeGrapple(max);
+				planGrappleTransition(targetBoard, transition);
+			}
+
+			else {
+				System.exit(-1);
+			}
+
+		}
+
+		return true;
 	}
 
 }

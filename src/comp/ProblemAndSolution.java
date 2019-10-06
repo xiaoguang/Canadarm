@@ -154,7 +154,7 @@ public class ProblemAndSolution {
 
 		for (; idx < endGrapples; idx++) {
 			String[] coord = list.get(idx).split(" ");
-			Board.grapples.add(new Coordinate(Double.parseDouble(coord[0]),
+			this.board.grapples.add(new Coordinate(Double.parseDouble(coord[0]),
 					Double.parseDouble(coord[1])));
 		}
 

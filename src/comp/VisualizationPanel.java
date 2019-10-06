@@ -93,8 +93,8 @@ public class VisualizationPanel extends JComponent {
 				&& this.frameNumber == frameNumber)) {
 			return;
 		}
+
 		this.frameNumber = frameNumber;
-		System.out.println("\n" + this.frameNumber + "\n");
 		this.visualizer.setFrameNumber(frameNumber);
 		this.currentRobotState = this.probNSolt.robotStates
 				.get(this.frameNumber);
@@ -105,7 +105,7 @@ public class VisualizationPanel extends JComponent {
 		}
 
 		if (this.currentRobotState.ee.equals(this.probNSolt.board.state.ee1)) {
-			System.out.println("Grapple 1");
+			// System.out.println("Grapple 1");
 			this.probNSolt.board.state.ee1Grappled = true;
 			this.probNSolt.board.state.ee2Grappled = false;
 
@@ -118,7 +118,7 @@ public class VisualizationPanel extends JComponent {
 			this.probNSolt.board.state.calcJoints();
 		} else if (this.currentRobotState.ee
 				.equals(this.probNSolt.board.state.ee2)) {
-			System.out.println("Grapple 2");
+			// System.out.println("Grapple 2");
 			this.probNSolt.board.state.ee1Grappled = false;
 			this.probNSolt.board.state.ee2Grappled = true;
 
@@ -130,10 +130,7 @@ public class VisualizationPanel extends JComponent {
 
 			this.probNSolt.board.state.calcJoints();
 		} else {
-			System.out.println("ELSE");
-			System.out.println(this.currentRobotState.ee);
-			System.out.println(this.probNSolt.board.state.ee1);
-			System.out.println(this.probNSolt.board.state.ee2);
+			System.exit(-1);
 		}
 
 		repaint();
@@ -162,7 +159,6 @@ public class VisualizationPanel extends JComponent {
 		if (this.animationTimer != null) {
 			this.animationTimer.stop();
 		}
-		System.out.println("\n\n\nStop Animation\n\n\n");
 		this.animating = false;
 		this.visualizer.setPlaying(false);
 		this.frameNumber = null;
@@ -273,7 +269,7 @@ public class VisualizationPanel extends JComponent {
 		for (BoundingBox ob : Board.obstacles)
 			this.paintObstacle(g2, ob, GlbCfg.obstacleColor);
 
-		for (Coordinate gpl : Board.grapples)
+		for (Coordinate gpl : this.probNSolt.board.grapples)
 			this.paintGrapple(g2, gpl, GlbCfg.grapplesColor);
 
 		if (this.animating) {

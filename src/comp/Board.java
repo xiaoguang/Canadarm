@@ -2,6 +2,7 @@ package comp;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Board {
 
@@ -9,13 +10,16 @@ public class Board {
 	public RobotState goalRobotState;
 
 	RobotState state;
-	List<Board> transition;
+	List<Coordinate> grapples;
 
-	public static final List<Coordinate> grapples = new ArrayList<Coordinate>();
 	public static final List<BoundingBox> obstacles = new ArrayList<BoundingBox>();
 
 	public Board() {
-		this.transition = new ArrayList<Board>();
+		this.grapples = new ArrayList<Coordinate>();
+	}
+
+	public boolean removeGrapple(Coordinate g) {
+		return this.grapples.remove(g);
 	}
 
 	@Override
@@ -34,16 +38,14 @@ public class Board {
 	}
 
 	@Override
-	public boolean equals(Object object) {
-		if (object == null)
-			return false;
-		if (object == this)
-			return true;
-		if (this.getClass() != object.getClass())
-			return false;
-
-		Board b = (Board) object;
-		return this.equals(b);
+	public Board clone() {
+		Board cpy = new Board();
+		cpy.initRobotState = this.initRobotState.clone();
+		cpy.goalRobotState = this.goalRobotState.clone();
+		cpy.state = this.state.clone();
+		cpy.grapples = this.grapples.stream().map(e -> e.clone())
+				.collect(Collectors.toList());
+		return cpy;
 	}
 
 }
