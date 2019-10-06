@@ -95,7 +95,7 @@ public class VisualizationPanel extends JComponent {
 		}
 
 		this.frameNumber = frameNumber;
-		this.visualizer.setFrameNumber(frameNumber);
+		this.visualizer.setFrameNumber(this.frameNumber);
 		this.currentRobotState = this.probNSolt.robotStates
 				.get(this.frameNumber);
 
@@ -129,8 +129,6 @@ public class VisualizationPanel extends JComponent {
 			}
 
 			this.probNSolt.board.state.calcJoints();
-		} else {
-			System.exit(-1);
 		}
 
 		repaint();
