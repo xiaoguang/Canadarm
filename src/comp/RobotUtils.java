@@ -19,6 +19,18 @@ public class RobotUtils {
 		return lower + width * random.nextDouble();
 	}
 
+	public static synchronized double uniformAngleSampleForFirstSegment(
+			double lower, double upper) {
+		double width = upper - lower;
+		if (width > Math.PI) {
+			width -= 2 * Math.PI;
+		}
+		if (width < -Math.PI) {
+			width += 2 * Math.PI;
+		}
+		return lower + width * random.nextDouble();
+	}
+
 	private static synchronized double determinant(double px, double py,
 			double qx, double qy) {
 		return px * qy - py * qx;
@@ -30,6 +42,18 @@ public class RobotUtils {
 
 	public static synchronized double diffInRadian(Angle from, Angle to) {
 		return to.radian - from.radian;
+	}
+
+	public static synchronized double diffInRadianForFirstSegment(Angle from,
+			Angle to) {
+		double diff = RobotUtils.diffInRadian(from, to);
+		if (diff > Math.PI) {
+			diff -= 2 * Math.PI;
+		}
+		if (diff < -Math.PI) {
+			diff += 2 * Math.PI;
+		}
+		return diff;
 	}
 
 	public static synchronized boolean testBoundingBoxCollision(Coordinate p1,
@@ -135,7 +159,13 @@ public class RobotUtils {
 		for (int i = 0; i < local.size(); i++) {
 			Segment seg1 = local.get(i);
 			Segment seg2 = comp.get(i);
-			dist += Math.abs(RobotUtils.diffInRadian(seg1.angle, seg2.angle));
+			if (i == 0) {
+				dist += Math.abs(RobotUtils
+						.diffInRadianForFirstSegment(seg1.angle, seg2.angle));
+			} else {
+				dist += Math
+						.abs(RobotUtils.diffInRadian(seg1.angle, seg2.angle));
+			}
 			dist += Math.abs(seg1.len - seg2.len);
 		}
 

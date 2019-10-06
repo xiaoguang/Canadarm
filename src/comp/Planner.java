@@ -130,7 +130,13 @@ public class Planner {
 			Segment sf = rsFrom.segments.get(i);
 			Segment st = rsTo.segments.get(i);
 
-			double angleDiff = RobotUtils.diffInRadian(sf.angle, st.angle);
+			double angleDiff = Double.MAX_VALUE;
+			if (i == 0) {
+				angleDiff = RobotUtils.diffInRadianForFirstSegment(sf.angle,
+						st.angle);
+			} else {
+				angleDiff = RobotUtils.diffInRadian(sf.angle, st.angle);
+			}
 			double lengthDiff = sf.len - st.len;
 
 			// length shifts

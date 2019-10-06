@@ -204,10 +204,23 @@ public class RobotState {
 		for (int i = 0; i < this.segments.size(); i++) {
 			Segment from = this.segments.get(i);
 			Segment to = state.segments.get(i);
-			to.angle.radian = RobotUtils.uniformSample(from.angle.radian,
-					to.angle.radian);
+
+			if (i == 0) {
+				to.angle.radian = RobotUtils.uniformAngleSampleForFirstSegment(
+						from.angle.radian, to.angle.radian);
+			} else {
+				to.angle.radian = RobotUtils.uniformSample(from.angle.radian,
+						to.angle.radian);
+			}
+
 			to.angle.normalize();
-			dist += Math.abs(RobotUtils.diffInRadian(from.angle, to.angle));
+
+			if (i == 0) {
+				dist += Math.abs(RobotUtils
+						.diffInRadianForFirstSegment(from.angle, to.angle));
+			} else {
+				dist += Math.abs(RobotUtils.diffInRadian(from.angle, to.angle));
+			}
 			to.len = RobotUtils.uniformSample(from.len, to.len);
 			dist += Math.abs(from.len - to.len);
 		}
