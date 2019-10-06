@@ -20,10 +20,14 @@ public class Solver {
 			Path p = Paths.get(args[0]);
 			String fileName = p.getFileName().toString();
 			String current = new java.io.File(".").getCanonicalPath();
-			String outputFile = current.concat("/").concat("output").concat("/")
-					.concat("output_").concat(fileName);
-			BufferedWriter writer = new BufferedWriter(
-					new FileWriter(outputFile));
+			String outputPathFile = current.concat("/").concat("output")
+					.concat("/").concat("output_path_").concat(fileName);
+			String outputStepFile = current.concat("/").concat("output")
+					.concat("/").concat("output_step_").concat(fileName);
+			BufferedWriter writerPath = new BufferedWriter(
+					new FileWriter(outputPathFile));
+			BufferedWriter writerStep = new BufferedWriter(
+					new FileWriter(outputStepFile));
 			probNSolt.readProblemFromInput(args[0]);
 			System.out.println(probNSolt.board.toString());
 
@@ -31,10 +35,17 @@ public class Solver {
 			List<RobotState> path = finder.findPath();
 			for (RobotState state : path) {
 				RobotStateOutPut rso = new RobotState.RobotStateOutPut(state);
-				writer.write(rso.toString().concat(System.lineSeparator()));
+				writerPath.write(rso.toString().concat(System.lineSeparator()));
 			}
 
-			writer.close();
+			List<RobotState> steps = finder.smoothPath(path);
+			for (RobotState state : steps) {
+				RobotStateOutPut rso = new RobotState.RobotStateOutPut(state);
+				writerStep.write(rso.toString().concat(System.lineSeparator()));
+			}
+
+			writerPath.close();
+			writerStep.close();
 
 			probNSolt.readSolutionFromInput(args[1]);
 			for (RobotStateOutPut out : probNSolt.robotStates)

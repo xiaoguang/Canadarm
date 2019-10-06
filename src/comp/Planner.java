@@ -115,11 +115,24 @@ public class Planner {
 		return true;
 	}
 
-	public List<RobotState> generateSteps(RobotState from, RobotState to) {
-		if (!this.validate(from, to))
-			return null;
-		if (!this.reachable(from, to))
-			return null;
+	public List<RobotState> stepSmoother(RobotState from, RobotState to) {
+		return this.generateSteps(from, to, GlbCfg.delta, GlbCfg.delta, false);
+	}
+
+	public List<RobotState> generateStepsFeatureTracking(RobotState from,
+			RobotState to) {
+		return this.generateSteps(from, to, GlbCfg.deltaLength,
+				GlbCfg.deltaRadian, true);
+	}
+
+	public List<RobotState> generateSteps(RobotState from, RobotState to,
+			double deltaLength, double deltaRadian, boolean check) {
+		if (check) {
+			if (!this.validate(from, to))
+				return null;
+			if (!this.reachable(from, to))
+				return null;
+		}
 
 		List<RobotState> changes = new ArrayList<RobotState>();
 		RobotState rsFrom = from.clone();
@@ -142,25 +155,29 @@ public class Planner {
 			// length shifts
 			{
 				if (lengthDiff > 0) {
-					while (lengthDiff > GlbCfg.deltaLength) {
-						lengthDiff -= GlbCfg.deltaLength;
-						sf.len -= GlbCfg.deltaLength;
+					while (lengthDiff > deltaLength) {
+						lengthDiff -= deltaLength;
+						sf.len -= deltaLength;
 						rsFrom.calcJoints();
 
 						RobotState lrs = rsFrom.clone();
-						if (lrs.collision())
-							return null;
+						if (check) {
+							if (lrs.collision())
+								return null;
+						}
 						changes.add(lrs);
 					}
 				} else {
-					while (Math.abs(lengthDiff) > GlbCfg.deltaLength) {
-						lengthDiff += GlbCfg.deltaLength;
-						sf.len += GlbCfg.deltaLength;
+					while (Math.abs(lengthDiff) > deltaLength) {
+						lengthDiff += deltaLength;
+						sf.len += deltaLength;
 						rsFrom.calcJoints();
 
 						RobotState lrs = rsFrom.clone();
-						if (lrs.collision())
-							return null;
+						if (check) {
+							if (lrs.collision())
+								return null;
+						}
 						changes.add(lrs);
 					}
 				}
@@ -170,33 +187,39 @@ public class Planner {
 
 				sf.len += lengthDiff;
 				RobotState lrs = rsFrom.clone();
-				if (lrs.collision())
-					return null;
+				if (check) {
+					if (lrs.collision())
+						return null;
+				}
 				changes.add(lrs);
 			}
 
 			// angle shifts
 			{
 				if (angleDiff > 0) {
-					while (angleDiff > GlbCfg.deltaRadian) {
-						angleDiff -= GlbCfg.deltaRadian;
-						sf.angle.addInRadian(GlbCfg.deltaRadian);
+					while (angleDiff > deltaRadian) {
+						angleDiff -= deltaRadian;
+						sf.angle.addInRadian(deltaRadian);
 						rsFrom.calcJoints();
 
 						RobotState lrs = rsFrom.clone();
-						if (lrs.collision())
-							return null;
+						if (check) {
+							if (lrs.collision())
+								return null;
+						}
 						changes.add(lrs);
 					}
 				} else {
-					while (Math.abs(angleDiff) > GlbCfg.deltaRadian) {
-						angleDiff += GlbCfg.deltaRadian;
-						sf.angle.minusInRadian(GlbCfg.deltaRadian);
+					while (Math.abs(angleDiff) > deltaRadian) {
+						angleDiff += deltaRadian;
+						sf.angle.minusInRadian(deltaRadian);
 						rsFrom.calcJoints();
 
 						RobotState lrs = rsFrom.clone();
-						if (lrs.collision())
-							return null;
+						if (check) {
+							if (lrs.collision())
+								return null;
+						}
 						changes.add(lrs);
 					}
 				}
@@ -206,8 +229,10 @@ public class Planner {
 
 				sf.angle.addInRadian(angleDiff);
 				RobotState lrs = rsFrom.clone();
-				if (lrs.collision())
-					return null;
+				if (check) {
+					if (lrs.collision())
+						return null;
+				}
 				changes.add(lrs);
 			}
 		}

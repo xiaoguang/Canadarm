@@ -52,7 +52,7 @@ public class RRT {
 				return null;
 		}
 
-		if (planner.generateSteps(minNode.rs, state) == null)
+		if (planner.generateStepsFeatureTracking(minNode.rs, state) == null)
 			return null;
 
 		Node newNode = minNode.addChildren(state);

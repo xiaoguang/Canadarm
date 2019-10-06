@@ -11,6 +11,7 @@ public final class GlbCfg {
 	public static final int prime5 = 89;
 
 	public static final double epsilon = 1e-6;
+	public static final double delta = 1e-3;
 	public static final double gpRadius = 0.013;
 
 	public static final int frameRateMin = 1;
@@ -37,7 +38,9 @@ public final class GlbCfg {
 	public static final Color grapplesColor = Color.RED;
 	public static final Color obstacleColor = Color.WHITE;
 
-	public static final double deltaRadian = 0.0349065850399;
+	// public static final double deltaRadian = 0.0349065850399;
+	public static final double deltaRadian = 0.00872665;
+	// public static final double deltaRadian = 0.0043633233;
 	public static final double deltaLength = 0.005;
 	public static final double rrtMaxRadianDistance = deltaRadian * 4;
 	public static final double rrtMaxLengthDistance = deltaLength * 4;

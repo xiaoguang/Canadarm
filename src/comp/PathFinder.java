@@ -31,19 +31,6 @@ public class PathFinder {
 		this.planGrappleTransition(this.board, transition);
 
 		for (Board bd : transition) {
-			/// *-
-			System.out.println("\n\nInit");
-			System.out.println(
-					new RobotState.RobotStateOutPut(bd.initRobotState));
-			System.out.println(bd.initRobotState.ee1);
-			System.out.println(bd.initRobotState.ee2);
-			System.out.println("\n\nGoal");
-			System.out.println(
-					new RobotState.RobotStateOutPut(bd.goalRobotState));
-			System.out.println(bd.goalRobotState.ee1);
-			System.out.println(bd.goalRobotState.ee2);
-			// */
-
 			ConnectedPath found = this.findConnector(bd.initRobotState,
 					bd.goalRobotState);
 
@@ -80,6 +67,20 @@ public class PathFinder {
 		return steps;
 	}
 
+	public List<RobotState> smoothPath(List<RobotState> pivotal) {
+		List<RobotState> steps = new ArrayList<RobotState>();
+
+		for (int i = 0; i < pivotal.size() - 1; i++) {
+			int j = i + 1;
+			RobotState from = pivotal.get(i);
+			RobotState to = pivotal.get(j);
+
+			steps.addAll(planner.stepSmoother(from, to));
+		}
+
+		return steps;
+	}
+
 	private void connect(RRT rrtA, RRT rrtB, ConnectedPath conn) {
 
 		boolean growTree = false;
@@ -102,8 +103,8 @@ public class PathFinder {
 					continue;
 
 				minNode = goal;
-				List<RobotState> steps = planner.generateSteps(sampleFromA.rs,
-						minNode.rs);
+				List<RobotState> steps = planner.generateStepsFeatureTracking(
+						sampleFromA.rs, minNode.rs);
 				if (steps == null)
 					continue;
 
