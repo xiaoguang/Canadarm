@@ -60,6 +60,11 @@ public class Planner {
 			if (dist < seg.max) {
 				seg.len = dist;
 				seg.angle = RobotUtils.findAngle(to, from, from, prev);
+				// check angle limitations ->
+				// mainly about the last segment angles between robot and
+				// obstacles
+				if (!this.checkAngleLimitation(from, to))
+					continue;
 				sample.calcJoints();
 				if (!sample.collision())
 					found = true;
@@ -67,6 +72,18 @@ public class Planner {
 		}
 
 		return new TransitionState(sample, found);
+	}
+
+	private boolean checkAngleLimitation(Coordinate from, Coordinate to) {
+		for (BoundingBox bb : Board.obstacles) {
+			for (Line l : bb.edges) {
+				Angle ang = RobotUtils.findAngle(to, from, l.p, l.q);
+				if (Math.abs(ang.radian) < 2 * GlbCfg.deltaRadian)
+					return false;
+			}
+		}
+
+		return true;
 	}
 
 	public boolean validate(RobotState from, RobotState to) {

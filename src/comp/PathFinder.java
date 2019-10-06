@@ -31,6 +31,19 @@ public class PathFinder {
 		this.planGrappleTransition(this.board, transition);
 
 		for (Board bd : transition) {
+			/// *-
+			System.out.println("\n\nInit");
+			System.out.println(
+					new RobotState.RobotStateOutPut(bd.initRobotState));
+			System.out.println(bd.initRobotState.ee1);
+			System.out.println(bd.initRobotState.ee2);
+			System.out.println("\n\nGoal");
+			System.out.println(
+					new RobotState.RobotStateOutPut(bd.goalRobotState));
+			System.out.println(bd.goalRobotState.ee1);
+			System.out.println(bd.goalRobotState.ee2);
+			// */
+
 			ConnectedPath found = this.findConnector(bd.initRobotState,
 					bd.goalRobotState);
 
@@ -62,7 +75,6 @@ public class PathFinder {
 				}
 
 			}
-
 		}
 
 		return steps;
@@ -190,19 +202,26 @@ public class PathFinder {
 					|| targetBoard.initRobotState.ee2Grappled != targetBoard.goalRobotState.ee2Grappled)
 				return false;
 
-			Coordinate endEffector;
+			Coordinate initEndEffector;
 			if (targetBoard.initRobotState.ee1Grappled)
-				endEffector = targetBoard.initRobotState.ee1;
+				initEndEffector = targetBoard.initRobotState.ee1;
 			else
-				endEffector = targetBoard.initRobotState.ee2;
+				initEndEffector = targetBoard.initRobotState.ee2;
+
+			Coordinate goalEndEffector;
+			if (targetBoard.goalRobotState.ee1Grappled)
+				goalEndEffector = targetBoard.goalRobotState.ee1;
+			else
+				goalEndEffector = targetBoard.goalRobotState.ee2;
 
 			RobotState finalGoalState = targetBoard.goalRobotState.clone();
 
 			double minDist = Double.MAX_VALUE;
 			Coordinate min = null;
 			for (Coordinate c : targetBoard.grapples) {
-				if (!c.equals(endEffector)) {
-					double dist = RobotUtils.euclideanDistance(endEffector, c);
+				if (!c.equals(initEndEffector) && !c.equals(goalEndEffector)) {
+					double dist = RobotUtils.euclideanDistance(initEndEffector,
+							c);
 					if (dist < minDist) {
 						minDist = dist;
 						min = c;
@@ -228,7 +247,7 @@ public class PathFinder {
 			b2.goalRobotState = finalGoalState;
 			b2.state = newInit.clone();
 
-			b2.removeGrapple(endEffector);
+			b2.removeGrapple(initEndEffector);
 			planGrappleTransition(b2, transition);
 		}
 
@@ -236,20 +255,27 @@ public class PathFinder {
 			if (targetBoard.initRobotState.ee1Grappled != targetBoard.goalRobotState.ee1Grappled
 					&& targetBoard.initRobotState.ee2Grappled != targetBoard.goalRobotState.ee2Grappled) {
 
-				Coordinate endEffector;
+				Coordinate initEndEffector;
 				if (targetBoard.initRobotState.ee1Grappled)
-					endEffector = targetBoard.initRobotState.ee1;
+					initEndEffector = targetBoard.initRobotState.ee1;
 				else
-					endEffector = targetBoard.initRobotState.ee2;
+					initEndEffector = targetBoard.initRobotState.ee2;
+
+				Coordinate goalEndEffector;
+				if (targetBoard.goalRobotState.ee1Grappled)
+					goalEndEffector = targetBoard.goalRobotState.ee1;
+				else
+					goalEndEffector = targetBoard.goalRobotState.ee2;
 
 				RobotState finalGoalState = targetBoard.goalRobotState.clone();
 
 				double minDist = Double.MAX_VALUE;
 				Coordinate min = null;
 				for (Coordinate c : targetBoard.grapples) {
-					if (!c.equals(endEffector)) {
-						double dist = RobotUtils.euclideanDistance(endEffector,
-								c);
+					if (!c.equals(initEndEffector)
+							&& !c.equals(goalEndEffector)) {
+						double dist = RobotUtils
+								.euclideanDistance(initEndEffector, c);
 						if (dist < minDist) {
 							minDist = dist;
 							min = c;
@@ -275,7 +301,7 @@ public class PathFinder {
 				b2.goalRobotState = finalGoalState;
 				b2.state = newInit.clone();
 
-				b2.removeGrapple(endEffector);
+				b2.removeGrapple(initEndEffector);
 				planGrappleTransition(b2, transition);
 			}
 
