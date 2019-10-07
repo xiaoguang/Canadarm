@@ -129,6 +129,13 @@ public class VisualizationPanel extends JComponent {
 			}
 
 			this.probNSolt.board.state.calcJoints();
+		} else {
+			System.out.println("Log : \n");
+			System.out.println(this.currentRobotState.ee);
+			System.out.println("Current EE1 : \n");
+			System.out.println(this.probNSolt.board.state.ee1);
+			System.out.println("Current EE2 : \n");
+			System.out.println(this.probNSolt.board.state.ee2);
 		}
 
 		repaint();

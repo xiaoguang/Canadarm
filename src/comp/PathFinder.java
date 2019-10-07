@@ -74,8 +74,10 @@ public class PathFinder {
 			int j = i + 1;
 			RobotState from = pivotal.get(i);
 			RobotState to = pivotal.get(j);
-
-			steps.addAll(planner.stepSmoother(from, to));
+			List<RobotState> local = planner.stepSmoother(from, to);
+			for (RobotState state : local) {
+				steps.add(state);
+			}
 		}
 
 		return steps;

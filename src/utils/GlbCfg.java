@@ -39,8 +39,10 @@ public final class GlbCfg {
 	public static final Color obstacleColor = Color.WHITE;
 
 	// public static final double deltaRadian = 0.0349065850399;
-	public static final double deltaRadian = 0.00872665;
+	// public static final double deltaRadian = 0.00872665;
 	// public static final double deltaRadian = 0.0043633233;
+	// public static final double deltaRadian = 0.00698141;
+	public static final double deltaRadian = 0.005236;
 	public static final double deltaLength = 0.005;
 	public static final double rrtMaxRadianDistance = deltaRadian * 4;
 	public static final double rrtMaxLengthDistance = deltaLength * 4;

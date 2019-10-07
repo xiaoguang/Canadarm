@@ -135,9 +135,22 @@ public class Planner {
 		}
 
 		List<RobotState> changes = new ArrayList<RobotState>();
+
+		if (!check) {
+			if (from.ee1Grappled == to.ee2Grappled) {
+				changes.add(from);
+				changes.add(to);
+				return changes;
+			}
+		}
+
 		RobotState rsFrom = from.clone();
 		RobotState rsTo = to.clone();
-		changes.add(rsFrom);
+		if (check) {
+			changes.add(rsFrom);
+		} else {
+			changes.add(rsFrom.clone());
+		}
 
 		for (int i = 0; i < rsFrom.segments.size(); i++) {
 			Segment sf = rsFrom.segments.get(i);
@@ -156,84 +169,133 @@ public class Planner {
 			{
 				if (lengthDiff > 0) {
 					while (lengthDiff > deltaLength) {
-						lengthDiff -= deltaLength;
-						sf.len -= deltaLength;
-						rsFrom.calcJoints();
-
-						RobotState lrs = rsFrom.clone();
 						if (check) {
+							lengthDiff -= deltaLength;
+							sf.len -= deltaLength;
+							rsFrom.calcJoints();
+
+							RobotState lrs = rsFrom.clone();
 							if (lrs.collision())
 								return null;
+							changes.add(lrs);
+						} else {
+							RobotState lrs = rsFrom.clone();
+							lengthDiff -= deltaLength;
+							lrs.segments.get(i).len -= deltaLength;
+							lrs.calcJoints();
+							changes.add(lrs);
+							sf.len -= deltaLength;
+							rsFrom.calcJoints();
 						}
-						changes.add(lrs);
 					}
 				} else {
 					while (Math.abs(lengthDiff) > deltaLength) {
-						lengthDiff += deltaLength;
-						sf.len += deltaLength;
-						rsFrom.calcJoints();
-
-						RobotState lrs = rsFrom.clone();
 						if (check) {
+							lengthDiff += deltaLength;
+							sf.len += deltaLength;
+							rsFrom.calcJoints();
+
+							RobotState lrs = rsFrom.clone();
 							if (lrs.collision())
 								return null;
+							changes.add(lrs);
+						} else {
+							RobotState lrs = rsFrom.clone();
+							lengthDiff += deltaLength;
+							lrs.segments.get(i).len += deltaLength;
+							lrs.calcJoints();
+							changes.add(lrs);
+							sf.len += deltaLength;
+							rsFrom.calcJoints();
 						}
-						changes.add(lrs);
 					}
 				}
 
 				if (Math.abs(lengthDiff) < GlbCfg.epsilon)
 					continue;
 
-				sf.len += lengthDiff;
-				RobotState lrs = rsFrom.clone();
 				if (check) {
+					sf.len += lengthDiff;
+					rsFrom.calcJoints();
+					RobotState lrs = rsFrom.clone();
 					if (lrs.collision())
 						return null;
+					changes.add(lrs);
+				} else {
+					RobotState lrs = rsFrom.clone();
+					lrs.segments.get(i).len += lengthDiff;
+					lrs.calcJoints();
+					changes.add(lrs);
+					sf.len += lengthDiff;
+					rsFrom.calcJoints();
 				}
-				changes.add(lrs);
 			}
 
 			// angle shifts
 			{
 				if (angleDiff > 0) {
 					while (angleDiff > deltaRadian) {
-						angleDiff -= deltaRadian;
-						sf.angle.addInRadian(deltaRadian);
-						rsFrom.calcJoints();
-
-						RobotState lrs = rsFrom.clone();
 						if (check) {
+							angleDiff -= deltaRadian;
+							sf.angle.addInRadian(deltaRadian);
+							rsFrom.calcJoints();
+
+							RobotState lrs = rsFrom.clone();
 							if (lrs.collision())
 								return null;
+							changes.add(lrs);
+						} else {
+							angleDiff -= deltaRadian;
+							RobotState lrs = rsFrom.clone();
+							lrs.segments.get(i).angle.addInRadian(deltaRadian);
+							lrs.calcJoints();
+							changes.add(lrs);
+							sf.angle.addInRadian(deltaRadian);
+							rsFrom.calcJoints();
 						}
-						changes.add(lrs);
 					}
 				} else {
 					while (Math.abs(angleDiff) > deltaRadian) {
-						angleDiff += deltaRadian;
-						sf.angle.minusInRadian(deltaRadian);
-						rsFrom.calcJoints();
-
-						RobotState lrs = rsFrom.clone();
 						if (check) {
+							angleDiff += deltaRadian;
+							sf.angle.minusInRadian(deltaRadian);
+							rsFrom.calcJoints();
+
+							RobotState lrs = rsFrom.clone();
 							if (lrs.collision())
 								return null;
+							changes.add(lrs);
+						} else {
+							angleDiff += deltaRadian;
+							RobotState lrs = rsFrom.clone();
+							lrs.segments.get(i).angle
+									.minusInRadian(deltaRadian);
+							lrs.calcJoints();
+							changes.add(lrs);
+							sf.angle.minusInRadian(deltaRadian);
+							rsFrom.calcJoints();
 						}
-						changes.add(lrs);
 					}
 				}
 
 				if (Math.abs(angleDiff) < GlbCfg.epsilon)
 					continue;
 
-				sf.angle.addInRadian(angleDiff);
-				RobotState lrs = rsFrom.clone();
 				if (check) {
+					sf.angle.addInRadian(angleDiff);
+					rsFrom.calcJoints();
+					RobotState lrs = rsFrom.clone();
 					if (lrs.collision())
 						return null;
+					changes.add(lrs);
+				} else {
+					RobotState lrs = rsFrom.clone();
+					lrs.segments.get(i).angle.addInRadian(angleDiff);
+					lrs.calcJoints();
+					changes.add(lrs);
+					sf.angle.addInRadian(angleDiff);
+					rsFrom.calcJoints();
 				}
-				changes.add(lrs);
 			}
 		}
 

@@ -47,9 +47,11 @@ public class Solver {
 			writerPath.close();
 			writerStep.close();
 
+			/*-
 			probNSolt.readSolutionFromInput(args[1]);
 			for (RobotStateOutPut out : probNSolt.robotStates)
 				System.out.println(out);
+			*/
 
 		} catch (Exception e) {
 			e.printStackTrace();
